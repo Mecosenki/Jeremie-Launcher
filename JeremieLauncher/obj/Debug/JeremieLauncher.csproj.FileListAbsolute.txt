@@ -1,0 +1,10 @@
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\bin\Debug\JeremieLauncher.exe.config
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\bin\Debug\JeremieLauncher.exe
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\bin\Debug\JeremieLauncher.pdb
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.Properties.Resources.resources
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.csproj.GenerateResource.cache
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.csproj.CoreCompileInputs.cache
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.exe
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.pdb
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.JeremieLauncher.resources
+C:\Users\Owner\Desktop\C#\JeremieLauncher\JeremieLauncher\obj\Debug\JeremieLauncher.csprojAssemblyReference.cache
