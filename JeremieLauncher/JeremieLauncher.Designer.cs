@@ -38,6 +38,7 @@
             this.iFSCLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lyokoConquerorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblLauncherVersion = new System.Windows.Forms.Label();
+            this.btnOptions = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.GameMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -126,11 +127,23 @@
             this.lblLauncherVersion.TabIndex = 6;
             this.lblLauncherVersion.Text = "Version";
             // 
+            // btnOptions
+            // 
+            this.btnOptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnOptions.Location = new System.Drawing.Point(656, 27);
+            this.btnOptions.Name = "btnOptions";
+            this.btnOptions.Size = new System.Drawing.Size(132, 49);
+            this.btnOptions.TabIndex = 7;
+            this.btnOptions.Text = "Options";
+            this.btnOptions.UseVisualStyleBackColor = true;
+            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
+            // 
             // JeremieLauncher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.lblLauncherVersion);
             this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.pbVideo);
@@ -143,6 +156,7 @@
             this.MainMenuStrip = this.GameMenuStrip;
             this.MaximizeBox = false;
             this.Name = "JeremieLauncher";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "JeremieLauncher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.JeremieLauncher_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.JeremieLauncher_FormClosed);
@@ -166,6 +180,7 @@
         private System.Windows.Forms.ToolStripMenuItem iFSCLToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lyokoConquerorsToolStripMenuItem;
         private System.Windows.Forms.Label lblLauncherVersion;
+        private System.Windows.Forms.Button btnOptions;
     }
 }
 

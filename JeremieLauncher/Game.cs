@@ -13,18 +13,18 @@ namespace JeremieLauncher
     {
         public Game(string gameFolder, string executable, string gameName, string versionFile, string csvFileURL, string csvFile, string zipFile)
         {
-            GameFolder = JeremieLauncher.gamesFolder + gameFolder;
+            GameFolder = Utils.GamesFolder + gameFolder;
             Executable = gameFolder + "\\" + executable;
             GameName = gameName;
             VersionFile = GameFolder + "\\" + versionFile;
             CSVFileURL = csvFileURL;
-            CSVFile = JeremieLauncher.applicationFolder + "\\" + csvFile + ".csv";
-            ZipFile = JeremieLauncher.applicationFolder + "\\" + zipFile + ".zip";
+            CSVFile = Utils.ApplicationFolder + "\\" + csvFile + ".csv";
+            ZipFile = Utils.ApplicationFolder + "\\" + zipFile + ".zip";
         }
 
         public void SwitchGame()
         {
-            Utils.downloadFile(CSVFileURL, CSVFile, downloadCsvProgressChanged, downloadCsvComplete);
+            Utils.DownloadFile(CSVFileURL, CSVFile, downloadCsvProgressChanged, downloadCsvComplete);
         }
 
         private void downloadCsvProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -67,7 +67,7 @@ namespace JeremieLauncher
                     break;
                 case PlatformID.Win32NT:
                     os = "win";
-                    if (JeremieLauncher.is64BitOperatingSystem)
+                    if (Utils.Is64BitOperatingSystem)
                     {
                         os += ".64";
                     }
@@ -84,7 +84,7 @@ namespace JeremieLauncher
             {
                 if (item.Key == "curVerNum." + os)
                 {
-                    Version = item.Value;
+                    Version = Version.CreateFromString(item.Value);
                     values.TryGetValue("URL." + os, out URL);
                 }
                 if (item.Key == "trailerID")
@@ -153,9 +153,10 @@ namespace JeremieLauncher
             switch (GameStatus)
             {
                 case GameStatuses.OK:
-                    var startupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\" + JeremieLauncher.gamesFolder;
+                    var startupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\" + Utils.GamesFolder;
                     var programPath = Path.Combine(startupPath, Executable);
                     Process.Start(programPath);
+                    if(Options.GetOption<bool>("closeOnLaunch"))
                     Environment.Exit(0);
                     break;
                 case GameStatuses.NEEDINSTALL:
@@ -167,7 +168,7 @@ namespace JeremieLauncher
                     JeremieLauncher.instance.btnInstall.Enabled = false;
                     if (URL != "")
                     {
-                        Utils.downloadFile(URL, ZipFile, downloadProgressChange, downloadComplete);
+                        Utils.DownloadFile(URL, ZipFile, downloadProgressChange, downloadComplete);
                         Downloading = true;
                     }
                     else
@@ -205,7 +206,7 @@ namespace JeremieLauncher
                     counter++;
                 }
             }
-            return string.Format("{0:n" + (counter == 0 ? "0" : "2") + "} {1}", time, JeremieLauncher.timeSuffixes[counter]);
+            return string.Format("{0:n" + (counter == 0 ? "0" : "2") + "} {1}", time, Utils.TimeSuffixes[counter]);
         }
 
         private string convertBytes(long bytes)
@@ -217,7 +218,7 @@ namespace JeremieLauncher
                 number /= 1024;
                 counter++;
             }
-            return string.Format("{0:n2} {1}", number, JeremieLauncher.suffixes[counter]);
+            return string.Format("{0:n2} {1}", number, Utils.FileSuffixes[counter]);
         }
 
         private async void downloadComplete(object sender, AsyncCompletedEventArgs e)
@@ -229,8 +230,8 @@ namespace JeremieLauncher
                 return;
             }
             ((WebClient)sender).Dispose();
-            await Utils.ExtractAllAsync(ZipFile, GameFolder, true);
-            File.WriteAllText(VersionFile, Version);
+            await Utils.ExtractAllAsync(ZipFile, GameFolder, true, gameExtractProgressChanged);
+            File.WriteAllText(VersionFile, Version.ToString());
             JeremieLauncher.instance.lblDownload.Text = "Finished " + (GameStatus == GameStatuses.NEEDINSTALL ? "Installing" : "Updating");
             checkGameStatus();
             updateButton();
@@ -238,18 +239,24 @@ namespace JeremieLauncher
             Downloading = false;
         }
 
-        private bool checkVersion()
+        private void gameExtractProgressChanged(object sender, ExtractProgressChangedEventArgs e)
+        {
+            JeremieLauncher.instance.lblDownload.Text = "Extracting... " + " (" + e.Progress.ToString() + "%)";
+            JeremieLauncher.instance.pbDownload.Value = e.Progress;
+        }
+
+        private bool UpToDate()
         {
 
-            return getInstalledVersion() == Version;
+            return getInstalledVersion() >= Version;
         }
 
         private void checkGameStatus()
         {
-            GameStatus = URL==""?GameStatuses.NOTAVAILABLE:( Directory.Exists(GameFolder) ? (checkVersion() ? GameStatuses.OK : GameStatuses.NEEDUPDATE) : GameStatuses.NEEDINSTALL);
+            GameStatus = URL==""?GameStatuses.NOTAVAILABLE:( Directory.Exists(GameFolder) ? (UpToDate() ? GameStatuses.OK : GameStatuses.NEEDUPDATE) : GameStatuses.NEEDINSTALL);
         }
 
-        private string getInstalledVersion()
+        private string getInstalledVersionString()
         {
             string version = "Not Installed";
             if (File.Exists(VersionFile))
@@ -259,11 +266,21 @@ namespace JeremieLauncher
             return version;
         }
 
+        private Version getInstalledVersion()
+        {
+            string version = "";
+            if (File.Exists(VersionFile))
+            {
+                version = File.ReadAllLines(VersionFile)[0];
+            }
+            return Version.CreateFromString(version);
+        }
+
         public string GameFolder { get; }
         public string VersionFile { get; }
         public GameStatuses GameStatus { get; private set; }
         public string URL = "";
-        public string Version { get; private set; }
+        public Version Version { get; private set; }
         public string CSVFileURL { get; }
         public string CSVFile { get; }
         public string ZipFile { get; }
