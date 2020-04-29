@@ -24,23 +24,30 @@ namespace JeremieLauncher
 
         public void SwitchGame()
         {
-            Utils.DownloadFile(CSVFileURL, CSVFile, downloadCsvProgressChanged, downloadCsvComplete);
+            //Utils.DownloadFile(CSVFileURL, CSVFile, downloadCsvProgressChanged, downloadCsvComplete);
+            if (!Downloading)
+            {
+                FileDownload fw = new FileDownload(CSVFileURL, CSVFile);
+                fw.DownloadCompleted += downloadCsvComplete;
+                fw.ProgressChanged += downloadCsvProgressChanged;
+                fw.Start();
+            }
         }
 
-        private void downloadCsvProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        private void downloadCsvProgressChanged(object sender, DownloadProgressChangeEventArgs e)
         {
             JeremieLauncher.instance.lblDownload.Text = "Checking for updates for: " + GameName + " " + e.ProgressPercentage.ToString() + "%";
             JeremieLauncher.instance.pbDownload.Value = e.ProgressPercentage;
         }
 
-        private async void downloadCsvComplete(object sender, AsyncCompletedEventArgs e)
+        private void downloadCsvComplete(object sender, EventArgs e)
         {
-            if (e.Cancelled)
+            /*if (e.Cancelled)
             {
                 ((WebClient)sender).Dispose();
                 await Task.Run(() => File.Delete(CSVFile));
                 return;
-            }
+            }*/
 
             Dictionary<string, string> values = new Dictionary<string, string>();
 
@@ -168,7 +175,11 @@ namespace JeremieLauncher
                     JeremieLauncher.instance.btnInstall.Enabled = false;
                     if (URL != "")
                     {
-                        Utils.DownloadFile(URL, ZipFile, downloadProgressChange, downloadComplete);
+                        //Utils.DownloadFile(URL, ZipFile, downloadProgressChange, downloadComplete);
+                        fw = new FileDownload(URL, ZipFile);
+                        fw.DownloadCompleted += downloadComplete;
+                        fw.ProgressChanged += downloadProgressChange;
+                        fw.Start();
                         Downloading = true;
                     }
                     else
@@ -183,10 +194,10 @@ namespace JeremieLauncher
             lastBytes = nowBytes;
         }
 
-        private void downloadProgressChange(object sender, DownloadProgressChangedEventArgs e)
+        private void downloadProgressChange(object sender, DownloadProgressChangeEventArgs e)
         {
             nowBytes = e.BytesReceived;
-            JeremieLauncher.instance.lblDownload.Text = "Progress: " + convertBytes(e.BytesReceived) + "/" + convertBytes(e.TotalBytesToReceive) + " (" + e.ProgressPercentage.ToString() + "%) " + convertBytes(downloadSpeedBytes) + "/s " + getTimeRemaing(e.TotalBytesToReceive - e.BytesReceived);
+            JeremieLauncher.instance.lblDownload.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + convertBytes(downloadSpeedBytes) + "/s " + getTimeRemaing(e.RemainingBytes);
             JeremieLauncher.instance.pbDownload.Value = e.ProgressPercentage;
         }
 
@@ -221,14 +232,14 @@ namespace JeremieLauncher
             return string.Format("{0:n2} {1}", number, Utils.FileSuffixes[counter]);
         }
 
-        private async void downloadComplete(object sender, AsyncCompletedEventArgs e)
+        private async void downloadComplete(object sender, EventArgs e)
         {
-            if (e.Cancelled)
+            /*if (e.Cancelled)
             {
                 ((WebClient)sender).Dispose();
                 await Task.Run(() => File.Delete(ZipFile));
                 return;
-            }
+            }*/
             ((WebClient)sender).Dispose();
             await Utils.ExtractAllAsync(ZipFile, GameFolder, true, gameExtractProgressChanged);
             File.WriteAllText(VersionFile, Version.ToString());
@@ -276,6 +287,19 @@ namespace JeremieLauncher
             return Version.CreateFromString(version);
         }
 
+        public void PauseDownload()
+        {
+            if (Downloading)
+                fw.Pause();
+        }
+
+        public void ResumeDownload()
+        {
+            if (Downloading)
+                fw.Start();
+        }
+
+        private FileDownload fw;
         public string GameFolder { get; }
         public string VersionFile { get; }
         public GameStatuses GameStatus { get; private set; }

@@ -14,7 +14,7 @@ namespace JeremieLauncher
 
         private string launcherInfoURL = "https://docs.google.com/spreadsheets/d/1Djgo8S3R5TaLjLsWBlw9LVL4VRiARuFLIeI67c1PoZ0/export?format=csv&gid=0";
 
-        private Version launcherVersion = new Version(1, 0, 2, 18);
+        private Version launcherVersion = new Version(1, 0, 3, 35);
 
         private string launcherSetupFile = Utils.ApplicationFolder+"\\setup_";
 
@@ -34,6 +34,8 @@ namespace JeremieLauncher
 
         private OptionsForm optionsForm= new OptionsForm();
 
+        private Timer checkUpdate_timer;
+
         public JeremieLauncher()
         {
             InitializeComponent();
@@ -42,6 +44,9 @@ namespace JeremieLauncher
 
         private void JeremieLauncher_Load(object sender, EventArgs e)
         {
+            checkUpdate_timer = new Timer();
+            checkUpdate_timer.Tick += timerUpdate_tick;
+            Options.OptionsChanged += optionsChanged;
             Options.UpdateOptions();
             lblLauncherVersion.Text = "Launcher Version: "+ launcherVersion.ToString();
             btnInstall.Left = (ClientSize.Width - btnInstall.Width) / 2;
@@ -56,15 +61,17 @@ namespace JeremieLauncher
 
         private void checkUpdate()
         {
-            Utils.DownloadFile(launcherInfoURL, launcherInfoFile, null, checkUpdateFinished);
+            //Utils.DownloadFile(launcherInfoURL, launcherInfoFile, null, checkUpdateFinished);
+            FileDownload fw = new FileDownload(launcherInfoURL, launcherInfoFile);
+            fw.DownloadCompleted += checkUpdateFinished;
+            fw.Start();
         }
 
-        private void checkUpdateFinished(object sender, AsyncCompletedEventArgs e)
+        private void checkUpdateFinished(object sender, EventArgs e)
         {
             Dictionary<string, string> values = new Dictionary<string, string>();
 
             String[] lines = File.ReadAllLines(launcherInfoFile);
-
             foreach (string line in lines)
             {
                 var lineValues = line.Split(',');
@@ -120,13 +127,17 @@ namespace JeremieLauncher
 
             if (newVersionV>launcherVersion)
             {
-                if (MessageBox.Show("Theres an update for Jeremie Launcher, download?", "Update", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                if (MessageBox.Show("Theres an update for Jeremie Launcher, Do you want to download it?", "Update Available", MessageBoxButtons.OKCancel) == DialogResult.OK)
                 {
                     Timer timer = new Timer();
                     timer.Tick += new EventHandler(timer_tick);
                     timer.Interval = 1000;
                     timer.Start();
-                    Utils.DownloadFile(newVersionURL, launcherSetupFile, setupProgressChanged, setupFinishDownload);
+                    //Utils.DownloadFile(newVersionURL, launcherSetupFile, setupProgressChanged, setupFinishDownload);
+                    FileDownload fw = new FileDownload(newVersionURL, launcherSetupFile);
+                    fw.DownloadCompleted += setupFinishDownload;
+                    fw.ProgressChanged += setupProgressChanged;
+                    fw.Start();
                 }
                 else
                 {
@@ -139,17 +150,17 @@ namespace JeremieLauncher
             }
         }
 
-        private void setupFinishDownload(object sender, AsyncCompletedEventArgs e)
+        private void setupFinishDownload(object sender, EventArgs e)
         {
             Process.Start(launcherSetupFile, "/update=true");
             Environment.Exit(0);
         }
 
-        private void setupProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        private void setupProgressChanged(object sender, DownloadProgressChangeEventArgs e)
         {
             nowBytes = e.BytesReceived;
-            lblDownload.Text = "Progress: " + convertBytes(e.BytesReceived) + "/" + convertBytes(e.TotalBytesToReceive) + " (" + e.ProgressPercentage.ToString() + "%) " + convertBytes(downloadSpeedBytes) + "/s " + getTimeRemaing(e.TotalBytesToReceive - e.BytesReceived);
-            pbDownload.Value = e.ProgressPercentage;
+            lblDownload.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + convertBytes(downloadSpeedBytes) + "/s " + getTimeRemaing(e.RemainingBytes);
+            pbDownload.Value = (int)e.ProgressPercentage;
         }
 
         private void timer_tick(object sender, EventArgs e)
@@ -195,11 +206,12 @@ namespace JeremieLauncher
             {
                 if (currentGame != null)
                 {
-                    if (currentGame.Downloading)
+                    /*if (currentGame.Downloading)
                     {
-                        MessageBox.Show("Downloading Game, Cannot switch game!");
-                        return;
-                    }
+                        //MessageBox.Show("Downloading Game, Cannot switch game!");
+                        //return;
+                    }*/
+                    currentGame.PauseDownload();
                 }
 
                 selectedGame = game;
@@ -219,6 +231,7 @@ namespace JeremieLauncher
                 if (currentGame != null)
                 {
                     currentGame.SwitchGame();
+                    currentGame.ResumeDownload();
                 }
             }
         }
@@ -263,6 +276,22 @@ namespace JeremieLauncher
             //Very crude way of only allowing one options form open TODO: change this
             optionsForm.FormClosed += new FormClosedEventHandler((object sender_, FormClosedEventArgs e_)=> { optionsForm = new OptionsForm(); });
             optionsForm.Show();
+        }
+
+        private void timerUpdate_tick(object sender, EventArgs e)
+        {
+            checkUpdate();
+        }
+
+        private void optionsChanged(object sender, OptionsChangedEventArgs e)
+        {
+            if (e.GetOption<int>("checkUpdateTime") != 0)
+            {
+                checkUpdate_timer.Interval = Options.TimeSelections[e.GetOption<int>("checkUpdateTime")] * 60000;
+                checkUpdate_timer.Start();
+            }
+            else
+                checkUpdate_timer.Stop();
         }
     }
 }

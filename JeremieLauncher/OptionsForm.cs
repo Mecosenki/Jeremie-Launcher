@@ -20,6 +20,7 @@ namespace JeremieLauncher
         private void OptionsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Options.UpdateOptionsFile();
+            Options.UpdateOptions();
         }
 
         private void chkCloseOnLeave_CheckStateChanged(object sender, EventArgs e)
@@ -31,11 +32,17 @@ namespace JeremieLauncher
         {
             btnSaveOptions.Left = (ClientSize.Width - btnSaveOptions.Width) / 2;
             chkCloseOnLeave.Checked = Options.GetOption<bool>("closeOnLaunch");
+            cbCheckUpdate.SelectedIndex = Options.GetOption<int>("checkUpdateTime");
         }
 
         private void btnSaveOptions_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void cbCheckUpdate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Options.UpdateOption("checkUpdateTime", cbCheckUpdate.SelectedIndex);
         }
     }
 }

@@ -47,6 +47,8 @@ namespace JeremieLauncher
 
         public static readonly string[] TimeSuffixes = { "Seconds", "Minutes", "Hours" };
 
+        
+        [Obsolete("Please Use FileDownload class for a better control over the download")]
         public static void DownloadFile(string url, string destinationName, DownloadProgressChangedEventHandler progress = null, AsyncCompletedEventHandler complete = null)
         {
             WebClient webClient = new WebClient();
@@ -121,4 +123,5 @@ namespace JeremieLauncher
     }
 
     public delegate void ExtractProgressChangedEventHandler(Object sender, ExtractProgressChangedEventArgs e);
+
 }

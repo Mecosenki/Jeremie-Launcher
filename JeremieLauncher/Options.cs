@@ -14,6 +14,10 @@ namespace JeremieLauncher
 
         private static Dictionary<string, object> options = new Dictionary<string, object>();
 
+        public static readonly int[] TimeSelections= {0,1,5,10,30,60 };
+
+        public static event OptionsChangedEventHandler OptionsChanged;
+
         public static void UpdateOptions()
         {
             if (!File.Exists(optionsFile))
@@ -22,10 +26,16 @@ namespace JeremieLauncher
             }
 
             string[] lines = File.ReadAllLines(optionsFile);
+            options = new Dictionary<string, object>();
             foreach (string line in lines)
             {
                 string[] components = line.Split(':');
                 options.Add(components[0], components[1]);
+            }
+
+            if (OptionsChanged != null)
+            {
+                OptionsChanged?.Invoke(JeremieLauncher.instance, new OptionsChangedEventArgs(options));
             }
         }
 
@@ -73,7 +83,8 @@ namespace JeremieLauncher
         private static Dictionary<string, object> getDefaultOptions()
         {
             Dictionary<string, object> options = new Dictionary<string, object>();
-            options.Add("closeOnLaunch",false);
+            options.Add("closeOnLaunch", true);
+            options.Add("checkUpdateTime", 3);
             return options;
         }
 
@@ -87,4 +98,39 @@ namespace JeremieLauncher
             File.WriteAllText(optionsFile, text);
         }
     }
+
+    public class OptionsChangedEventArgs : EventArgs
+    {
+        public OptionsChangedEventArgs(Dictionary<string, object> options)
+        {
+            Options = options;
+        }
+
+        public T GetOption<T>(string name)
+        {
+            object value;
+            Options.TryGetValue(name, out value);
+            if (typeof(T) == typeof(bool))
+            {
+                return (T)(object)Convert.ToBoolean(value);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                return (T)(object)Convert.ToInt32(value);
+            }
+            else if (typeof(T) == typeof(string))
+            {
+                return (T)(object)Convert.ToString(value);
+            }
+            else if (typeof(T) == typeof(decimal))
+            {
+                return (T)(object)Convert.ToDecimal(value);
+            }
+            return default;
+        }
+
+        public Dictionary<string, object> Options { get; }
+    }
+
+    public delegate void OptionsChangedEventHandler(object sender, OptionsChangedEventArgs e);
 }

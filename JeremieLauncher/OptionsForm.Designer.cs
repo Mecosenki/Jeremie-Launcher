@@ -31,13 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsForm));
             this.chkCloseOnLeave = new System.Windows.Forms.CheckBox();
             this.btnSaveOptions = new System.Windows.Forms.Button();
+            this.lblCheckUpdate = new System.Windows.Forms.Label();
+            this.cbCheckUpdate = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // chkCloseOnLeave
             // 
             this.chkCloseOnLeave.AutoSize = true;
             this.chkCloseOnLeave.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkCloseOnLeave.Location = new System.Drawing.Point(22, 49);
+            this.chkCloseOnLeave.Location = new System.Drawing.Point(12, 12);
             this.chkCloseOnLeave.Name = "chkCloseOnLeave";
             this.chkCloseOnLeave.Size = new System.Drawing.Size(269, 24);
             this.chkCloseOnLeave.TabIndex = 0;
@@ -56,11 +58,41 @@
             this.btnSaveOptions.UseVisualStyleBackColor = true;
             this.btnSaveOptions.Click += new System.EventHandler(this.btnSaveOptions_Click);
             // 
+            // lblCheckUpdate
+            // 
+            this.lblCheckUpdate.AutoSize = true;
+            this.lblCheckUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCheckUpdate.Location = new System.Drawing.Point(12, 39);
+            this.lblCheckUpdate.Name = "lblCheckUpdate";
+            this.lblCheckUpdate.Size = new System.Drawing.Size(188, 20);
+            this.lblCheckUpdate.TabIndex = 2;
+            this.lblCheckUpdate.Text = "Check For Updates every";
+            // 
+            // cbCheckUpdate
+            // 
+            this.cbCheckUpdate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCheckUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbCheckUpdate.FormattingEnabled = true;
+            this.cbCheckUpdate.Items.AddRange(new object[] {
+            "Off",
+            "1 Minute",
+            "5 Minutes",
+            "10 Minutes",
+            "30 Minutes",
+            "60 Minutes"});
+            this.cbCheckUpdate.Location = new System.Drawing.Point(206, 39);
+            this.cbCheckUpdate.Name = "cbCheckUpdate";
+            this.cbCheckUpdate.Size = new System.Drawing.Size(176, 28);
+            this.cbCheckUpdate.TabIndex = 3;
+            this.cbCheckUpdate.SelectedIndexChanged += new System.EventHandler(this.cbCheckUpdate_SelectedIndexChanged);
+            // 
             // OptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(469, 356);
+            this.Controls.Add(this.cbCheckUpdate);
+            this.Controls.Add(this.lblCheckUpdate);
             this.Controls.Add(this.btnSaveOptions);
             this.Controls.Add(this.chkCloseOnLeave);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -80,5 +112,7 @@
 
         private System.Windows.Forms.CheckBox chkCloseOnLeave;
         private System.Windows.Forms.Button btnSaveOptions;
+        private System.Windows.Forms.Label lblCheckUpdate;
+        private System.Windows.Forms.ComboBox cbCheckUpdate;
     }
 }
