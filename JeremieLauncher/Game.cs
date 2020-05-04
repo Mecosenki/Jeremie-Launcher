@@ -11,12 +11,12 @@ namespace JeremieLauncher
 {
     public class Game
     {
-        public Game(string gameFolder, string executable, string gameName, string versionFile, string csvFileURL, string csvFile, string zipFile)
+        public Game(string gameFolder, string executable, string gameName, string csvFileURL, string csvFile, string zipFile)
         {
             GameFolder = Utils.GamesFolder + gameFolder;
-            Executable = gameFolder + "\\" + executable;
+            Executable = gameFolder + "\\" + executable+".exe";
             GameName = gameName;
-            VersionFile = GameFolder + "\\" + versionFile;
+            VersionFile = GameFolder + "\\"+executable+ "_Data\\StreamingAssets\\dataV.dat";
             CSVFileURL = csvFileURL;
             CSVFile = Utils.ApplicationFolder + "\\" + csvFile + ".csv";
             ZipFile = Utils.ApplicationFolder + "\\" + zipFile + ".zip";
@@ -25,12 +25,17 @@ namespace JeremieLauncher
         public void SwitchGame()
         {
             //Utils.DownloadFile(CSVFileURL, CSVFile, downloadCsvProgressChanged, downloadCsvComplete);
+            JeremieLauncher.instance.ChangeGameName(GameName);
             if (!Downloading)
             {
                 FileDownload fw = new FileDownload(CSVFileURL, CSVFile);
                 fw.DownloadCompleted += downloadCsvComplete;
                 fw.ProgressChanged += downloadCsvProgressChanged;
                 fw.Start();
+            }
+            else
+            {
+                SetupGame();
             }
         }
 
@@ -48,7 +53,6 @@ namespace JeremieLauncher
                 await Task.Run(() => File.Delete(CSVFile));
                 return;
             }*/
-
             Dictionary<string, string> values = new Dictionary<string, string>();
 
             String[] lines = File.ReadAllLines(CSVFile);
@@ -100,33 +104,45 @@ namespace JeremieLauncher
                 }
             }
 
+
+            SetupGame();
+        }
+
+        private void SetupGame()
+        {
             JeremieLauncher.instance.pbVideo.Load("http://img.youtube.com/vi/" + VidURL + "/0.jpg");
             if (VidURL != "")
             {
                 JeremieLauncher.instance.pbVideo.Cursor = Cursors.Hand;
             }
-
             checkGameStatus();
 
+            JeremieLauncher.instance.lblVersion.Text = "Installed Version: " + getInstalledVersion();
             switch (GameStatus)
             {
                 case GameStatuses.NOTAVAILABLE:
-                    JeremieLauncher.instance.lblDownload.Text = GameName+" not available for your OS";
+                    JeremieLauncher.instance.lblDownload.Text = GameName + " not available for your OS";
+                        JeremieLauncher.instance.btnGameFolder.Enabled = false;
+                    JeremieLauncher.instance.btnUninstall.Visible = false;
                     break;
                 case GameStatuses.NEEDINSTALL:
                     JeremieLauncher.instance.lblDownload.Text = GameName + " needs to be installed";
+                        JeremieLauncher.instance.btnGameFolder.Enabled = false;
+                    JeremieLauncher.instance.btnUninstall.Visible = false;
                     break;
                 case GameStatuses.NEEDUPDATE:
-                    JeremieLauncher.instance.lblDownload.Text = "New Update for: " + GameName + " version: "+Version+", you have version: "+getInstalledVersion()+" installed";
+                    JeremieLauncher.instance.lblDownload.Text = "New Update for: " + GameName;
+                    JeremieLauncher.instance.lblVersion.Text = "Installed Version: " + getInstalledVersion()+" New Version: "+Version;
+                        JeremieLauncher.instance.btnGameFolder.Enabled = true;
+                    JeremieLauncher.instance.btnUninstall.Visible = true;
                     break;
                 case GameStatuses.OK:
-                    JeremieLauncher.instance.lblDownload.Text = GameName+" is up to date";
+                    JeremieLauncher.instance.lblDownload.Text = GameName + " is up to date";
+                        JeremieLauncher.instance.btnGameFolder.Enabled = true;
+                    JeremieLauncher.instance.btnUninstall.Visible = true;
                     break;
             }
-
             updateButton();
-
-            JeremieLauncher.instance.lblVersion.Text = "Installed Version: "+getInstalledVersion();
         }
 
         private void updateButton()
@@ -136,23 +152,37 @@ namespace JeremieLauncher
             {
                 case GameStatuses.NOTAVAILABLE:
                     btn.Text = "Install";
-                    JeremieLauncher.instance.btnInstall.Enabled = false;
+                        JeremieLauncher.instance.btnInstall.Enabled = false;
                     break;
                 case GameStatuses.OK:
                     btn.Text = "Play";
-                    JeremieLauncher.instance.btnInstall.Enabled = true;
+                        JeremieLauncher.instance.btnInstall.Enabled = true;
                     break;
                 case GameStatuses.NEEDUPDATE:
                     btn.Text = "Update";
-                    JeremieLauncher.instance.btnInstall.Enabled = true;
+                    if (!Downloading && !Extracting)
+                        JeremieLauncher.instance.btnInstall.Enabled = true;
                     break;
                 case GameStatuses.NEEDINSTALL:
                     btn.Text = "Install";
-                    JeremieLauncher.instance.btnInstall.Enabled = true;
+                    if (!Downloading && !Extracting)
+                        JeremieLauncher.instance.btnInstall.Enabled = true;
                     break;
             }
 
             //JeremieLauncher.instance.btnInstall.Enabled = GameStatus == GameStatuses.NOTAVAILABLE ? false : true;
+        }
+
+        public void OpenGameFolder()
+        {
+            if (GameStatus==GameStatuses.NEEDUPDATE||GameStatus==GameStatuses.OK) {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = GameFolder,
+                    FileName = "explorer.exe"
+                };
+                Process.Start(startInfo);
+            }
         }
 
         public void downloadGame()
@@ -168,10 +198,6 @@ namespace JeremieLauncher
                     break;
                 case GameStatuses.NEEDINSTALL:
                 case GameStatuses.NEEDUPDATE:
-                    Timer timer = new Timer();
-                    timer.Tick += new EventHandler(timer_tick);
-                    timer.Interval = 1000;
-                    timer.Start();
                     JeremieLauncher.instance.btnInstall.Enabled = false;
                     if (URL != "")
                     {
@@ -179,8 +205,8 @@ namespace JeremieLauncher
                         fw = new FileDownload(URL, ZipFile);
                         fw.DownloadCompleted += downloadComplete;
                         fw.ProgressChanged += downloadProgressChange;
-                        fw.Start();
                         Downloading = true;
+                        fw.Start();
                     }
                     else
                         MessageBox.Show("Your OS is not supported");
@@ -188,51 +214,13 @@ namespace JeremieLauncher
             }
         }
 
-        private void timer_tick(object sender, EventArgs e)
-        {
-            downloadSpeedBytes = nowBytes - lastBytes;
-            lastBytes = nowBytes;
-        }
-
         private void downloadProgressChange(object sender, DownloadProgressChangeEventArgs e)
         {
-            nowBytes = e.BytesReceived;
-            JeremieLauncher.instance.lblDownload.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + convertBytes(downloadSpeedBytes) + "/s " + getTimeRemaing(e.RemainingBytes);
+            JeremieLauncher.instance.lblDownload.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + e.ConvertBytesToString(e.DownloadSpeedBytes) + "/s " + e.getTimeRemaing();
             JeremieLauncher.instance.pbDownload.Value = e.ProgressPercentage;
         }
 
-        private string getTimeRemaing(long allBytes)
-        {
-            if (downloadSpeedBytes <= 0)
-            {
-                return "infinity";
-            }
-            decimal time = (decimal)allBytes / downloadSpeedBytes;
-            int counter = 0;
-            for (int i = 0; i < 2; i++)
-            {
-                if (time / 60 >= 1)
-                {
-                    time /= 60;
-                    counter++;
-                }
-            }
-            return string.Format("{0:n" + (counter == 0 ? "0" : "2") + "} {1}", time, Utils.TimeSuffixes[counter]);
-        }
-
-        private string convertBytes(long bytes)
-        {
-            decimal number = (decimal)bytes;
-            int counter = 0;
-            while (number / 1024 >= 1)
-            {
-                number /= 1024;
-                counter++;
-            }
-            return string.Format("{0:n2} {1}", number, Utils.FileSuffixes[counter]);
-        }
-
-        private async void downloadComplete(object sender, EventArgs e)
+        private void downloadComplete(object sender, EventArgs e)
         {
             /*if (e.Cancelled)
             {
@@ -240,41 +228,43 @@ namespace JeremieLauncher
                 await Task.Run(() => File.Delete(ZipFile));
                 return;
             }*/
-            ((WebClient)sender).Dispose();
-            await Utils.ExtractAllAsync(ZipFile, GameFolder, true, gameExtractProgressChanged);
-            File.WriteAllText(VersionFile, Version.ToString());
+            Extracting = true;
+            //await Utils.ExtractAllAsync(ZipFile, GameFolder, true, gameExtractProgressChanged);
+            JeremieLauncher.instance.btnInstall.Enabled = false;
+            if (Directory.Exists(GameFolder))
+                Directory.Delete(GameFolder, true);
+            FileExtract fe = new FileExtract(ZipFile, GameFolder, true);
+            fe.ExtractProgressChanged += gameExtractProgressChanged;
+            fe.ExtractCompleted += gameExtractCompleted;
+            fe.StartExtract();
+        }
+
+        private void gameExtractCompleted(object sender, EventArgs e) {
+
+            Extracting = false;
+            //File.WriteAllText(VersionFile, Version.versionString);
             JeremieLauncher.instance.lblDownload.Text = "Finished " + (GameStatus == GameStatuses.NEEDINSTALL ? "Installing" : "Updating");
             checkGameStatus();
             updateButton();
             JeremieLauncher.instance.lblVersion.Text = "Installed Version: " + getInstalledVersion();
             Downloading = false;
+            SetupGame();
         }
 
         private void gameExtractProgressChanged(object sender, ExtractProgressChangedEventArgs e)
         {
-            JeremieLauncher.instance.lblDownload.Text = "Extracting... " + " (" + e.Progress.ToString() + "%)";
+            JeremieLauncher.instance.lblDownload.Text = $"Extracting... {Utils.ConvertBytesToString(e.ExtractedSize)}/{Utils.ConvertBytesToString(e.ZipSize)} ({e.Progress}%)";
             JeremieLauncher.instance.pbDownload.Value = e.Progress;
         }
 
         private bool UpToDate()
         {
-
             return getInstalledVersion() >= Version;
         }
 
         private void checkGameStatus()
         {
-            GameStatus = URL==""?GameStatuses.NOTAVAILABLE:( Directory.Exists(GameFolder) ? (UpToDate() ? GameStatuses.OK : GameStatuses.NEEDUPDATE) : GameStatuses.NEEDINSTALL);
-        }
-
-        private string getInstalledVersionString()
-        {
-            string version = "Not Installed";
-            if (File.Exists(VersionFile))
-            {
-                version = File.ReadAllLines(VersionFile)[0];
-            }
-            return version;
+            GameStatus = URL == "" ? GameStatuses.NOTAVAILABLE : (File.Exists(VersionFile) ? (UpToDate() ? GameStatuses.OK : GameStatuses.NEEDUPDATE) : GameStatuses.NEEDINSTALL);
         }
 
         private Version getInstalledVersion()
@@ -282,7 +272,9 @@ namespace JeremieLauncher
             string version = "";
             if (File.Exists(VersionFile))
             {
-                version = File.ReadAllLines(VersionFile)[0];
+                string ver = File.ReadAllLines(VersionFile)[0];
+                string build = File.ReadAllLines(VersionFile)[1];
+                version = ver+"."+build;
             }
             return Version.CreateFromString(version);
         }
@@ -299,6 +291,15 @@ namespace JeremieLauncher
                 fw.Start();
         }
 
+        public void Uninstall()
+        {
+            if (File.Exists(VersionFile))
+            {
+                Directory.Delete(GameFolder, true);
+                SetupGame();
+            }
+        }
+
         private FileDownload fw;
         public string GameFolder { get; }
         public string VersionFile { get; }
@@ -312,9 +313,6 @@ namespace JeremieLauncher
         public string GameName { get; }
         public string VidURL { get; private set; }
         public bool Downloading { get; private set; }
-
-        private long nowBytes = 0;
-        private long lastBytes = 0;
-        private long downloadSpeedBytes = 0;
+        public bool Extracting { get; private set; }
     }
 }

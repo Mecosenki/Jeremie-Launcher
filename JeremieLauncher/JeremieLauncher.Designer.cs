@@ -37,8 +37,11 @@
             this.GameMenuStrip = new System.Windows.Forms.MenuStrip();
             this.iFSCLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lyokoConquerorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblLauncherVersion = new System.Windows.Forms.Label();
             this.btnOptions = new System.Windows.Forms.Button();
+            this.lblGameName = new System.Windows.Forms.Label();
+            this.btnGameFolder = new System.Windows.Forms.Button();
+            this.btnChangelog = new System.Windows.Forms.Button();
+            this.btnUninstall = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.GameMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -47,7 +50,7 @@
             // 
             this.btnInstall.Enabled = false;
             this.btnInstall.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnInstall.Location = new System.Drawing.Point(288, 132);
+            this.btnInstall.Location = new System.Drawing.Point(290, 154);
             this.btnInstall.Name = "btnInstall";
             this.btnInstall.Size = new System.Drawing.Size(166, 50);
             this.btnInstall.TabIndex = 0;
@@ -57,7 +60,7 @@
             // 
             // pbDownload
             // 
-            this.pbDownload.Location = new System.Drawing.Point(153, 226);
+            this.pbDownload.Location = new System.Drawing.Point(136, 264);
             this.pbDownload.Name = "pbDownload";
             this.pbDownload.Size = new System.Drawing.Size(500, 17);
             this.pbDownload.TabIndex = 1;
@@ -66,7 +69,7 @@
             // 
             this.lblDownload.AutoSize = true;
             this.lblDownload.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDownload.Location = new System.Drawing.Point(149, 203);
+            this.lblDownload.Location = new System.Drawing.Point(147, 232);
             this.lblDownload.Name = "lblDownload";
             this.lblDownload.Size = new System.Drawing.Size(0, 20);
             this.lblDownload.TabIndex = 2;
@@ -117,20 +120,10 @@
             this.lyokoConquerorsToolStripMenuItem.Text = "Lyoko Conquerors";
             this.lyokoConquerorsToolStripMenuItem.Click += new System.EventHandler(this.lyokoConquerorsToolStripMenuItem_Click);
             // 
-            // lblLauncherVersion
-            // 
-            this.lblLauncherVersion.AutoSize = true;
-            this.lblLauncherVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLauncherVersion.Location = new System.Drawing.Point(12, 24);
-            this.lblLauncherVersion.Name = "lblLauncherVersion";
-            this.lblLauncherVersion.Size = new System.Drawing.Size(63, 20);
-            this.lblLauncherVersion.TabIndex = 6;
-            this.lblLauncherVersion.Text = "Version";
-            // 
             // btnOptions
             // 
             this.btnOptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOptions.Location = new System.Drawing.Point(656, 27);
+            this.btnOptions.Location = new System.Drawing.Point(656, 194);
             this.btnOptions.Name = "btnOptions";
             this.btnOptions.Size = new System.Drawing.Size(132, 49);
             this.btnOptions.TabIndex = 7;
@@ -138,13 +131,61 @@
             this.btnOptions.UseVisualStyleBackColor = true;
             this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
+            // lblGameName
+            // 
+            this.lblGameName.AutoSize = true;
+            this.lblGameName.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGameName.Location = new System.Drawing.Point(284, 81);
+            this.lblGameName.Name = "lblGameName";
+            this.lblGameName.Size = new System.Drawing.Size(0, 31);
+            this.lblGameName.TabIndex = 8;
+            // 
+            // btnGameFolder
+            // 
+            this.btnGameFolder.Enabled = false;
+            this.btnGameFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGameFolder.Location = new System.Drawing.Point(656, 139);
+            this.btnGameFolder.Name = "btnGameFolder";
+            this.btnGameFolder.Size = new System.Drawing.Size(132, 49);
+            this.btnGameFolder.TabIndex = 9;
+            this.btnGameFolder.Text = "Open Game Folder";
+            this.btnGameFolder.UseVisualStyleBackColor = true;
+            this.btnGameFolder.Click += new System.EventHandler(this.btnGameFolder_Click);
+            // 
+            // btnChangelog
+            // 
+            this.btnChangelog.Enabled = false;
+            this.btnChangelog.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnChangelog.Location = new System.Drawing.Point(12, 139);
+            this.btnChangelog.Name = "btnChangelog";
+            this.btnChangelog.Size = new System.Drawing.Size(132, 49);
+            this.btnChangelog.TabIndex = 10;
+            this.btnChangelog.Text = "Launcher Changelog";
+            this.btnChangelog.UseVisualStyleBackColor = true;
+            this.btnChangelog.Click += new System.EventHandler(this.btnChangelog_Click);
+            // 
+            // btnUninstall
+            // 
+            this.btnUninstall.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUninstall.Location = new System.Drawing.Point(316, 210);
+            this.btnUninstall.Name = "btnUninstall";
+            this.btnUninstall.Size = new System.Drawing.Size(126, 33);
+            this.btnUninstall.TabIndex = 11;
+            this.btnUninstall.Text = "Uninstall";
+            this.btnUninstall.UseVisualStyleBackColor = true;
+            this.btnUninstall.Visible = false;
+            this.btnUninstall.Click += new System.EventHandler(this.btnUninstall_Click);
+            // 
             // JeremieLauncher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnUninstall);
+            this.Controls.Add(this.btnChangelog);
+            this.Controls.Add(this.btnGameFolder);
+            this.Controls.Add(this.lblGameName);
             this.Controls.Add(this.btnOptions);
-            this.Controls.Add(this.lblLauncherVersion);
             this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.pbVideo);
             this.Controls.Add(this.lblDownload);
@@ -179,8 +220,11 @@
         private System.Windows.Forms.MenuStrip GameMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem iFSCLToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lyokoConquerorsToolStripMenuItem;
-        private System.Windows.Forms.Label lblLauncherVersion;
         private System.Windows.Forms.Button btnOptions;
+        public System.Windows.Forms.Label lblGameName;
+        public System.Windows.Forms.Button btnGameFolder;
+        public System.Windows.Forms.Button btnChangelog;
+        public System.Windows.Forms.Button btnUninstall;
     }
 }
 

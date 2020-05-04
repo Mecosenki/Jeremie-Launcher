@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace JeremieLauncher
 {
@@ -28,6 +26,13 @@ namespace JeremieLauncher
 
         private bool Paused;
 
+        private long DownloadSpeedBytes;
+
+        private long lastBytes;
+        private long nowBytes;
+
+        private Timer timer = new Timer();
+
         public FileDownload(string source, string destination, bool overwrite=true, int chunckSize=5120)
         {
             AllowedToRun = true;
@@ -40,6 +45,8 @@ namespace JeremieLauncher
             Overwrite = overwrite;
 
             BytesWritten = 0;
+            timer.Interval = 1000;
+            timer.Tick += timer_tick;
         }
 
         private long GetContentLength()
@@ -53,6 +60,8 @@ namespace JeremieLauncher
             }
         }
 
+        private bool finished;
+
         private async Task Start(int range)
         {
             if (!AllowedToRun)
@@ -65,6 +74,8 @@ namespace JeremieLauncher
 
             DownloadProgressChangeEventHandler DPGhandler = ProgressChanged;
 
+            timer.Start();
+
             using (var response = await request.GetResponseAsync())
             {
                 using (var responseStream = response.GetResponseStream())
@@ -72,30 +83,35 @@ namespace JeremieLauncher
                     using (var fs = new FileStream(Destination, (Overwrite&&!Paused) ?FileMode.Create:FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
                     {
                         Paused = false;
+                        finished = false;
                         if (fs.Length != ContentLength.Value || Overwrite)
+                        {
                             while (AllowedToRun)
                             {
                                 var buffer = new byte[ChunkSize];
                                 var bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length);
 
-                                DownloadProgressChangeEventArgs DPGea = new DownloadProgressChangeEventArgs(fs.Length, ContentLength.Value);
+                                DownloadProgressChangeEventArgs DPGea = new DownloadProgressChangeEventArgs(fs.Length + bytesRead, ContentLength.Value, DownloadSpeedBytes);
 
                                 if (DPGhandler != null)
                                 {
                                     DPGhandler?.Invoke(this, DPGea);
                                 }
 
-                                if (bytesRead == 0) break;
+                                if (bytesRead == 0) { finished = true; break; }
 
                                 await fs.WriteAsync(buffer, 0, bytesRead);
                                 BytesWritten += bytesRead;
+
+                                nowBytes = fs.Length;
                             }
+                        }
 
                         await fs.FlushAsync();
                     }
                 }
             }
-            if (AllowedToRun)
+            if (finished)
             {
                 EventHandler handler = DownloadCompleted;
                 if (handler != null)
@@ -103,6 +119,12 @@ namespace JeremieLauncher
                     handler?.Invoke(this, new EventArgs());
                 }
             }
+        }
+
+        private void timer_tick(object sender, EventArgs e)
+        {
+            DownloadSpeedBytes = nowBytes - lastBytes;
+            lastBytes = nowBytes;
         }
 
         public Task Start()
@@ -115,17 +137,19 @@ namespace JeremieLauncher
         {
             Paused = true;
             AllowedToRun = false;
+            timer.Stop();
         }
     }
 
     public class DownloadProgressChangeEventArgs : EventArgs
     {
-        public DownloadProgressChangeEventArgs(long bytesReceived, long totalBytesToReceive)
+        public DownloadProgressChangeEventArgs(long bytesReceived, long totalBytesToReceive, long downloadSpeedBytes)
         {
             BytesReceived = bytesReceived;
             TotalBytesToReceive = totalBytesToReceive;
             ProgressPercentage = (int) ((bytesReceived * 100) / totalBytesToReceive);
             RemainingBytes = totalBytesToReceive - bytesReceived;
+            DownloadSpeedBytes = downloadSpeedBytes;
         }
         public string ConvertDownloadedBytesToString()
         {
@@ -141,20 +165,32 @@ namespace JeremieLauncher
         }
         public string ConvertBytesToString(long bytes)
         {
-            decimal number = (decimal)bytes;
-            int counter = 0;
-            while (number / 1024 >= 1)
+            return Utils.ConvertBytesToString(bytes);
+        }
+        public string getTimeRemaing()
+        {
+            if (DownloadSpeedBytes <= 0)
             {
-                number /= 1024;
-                counter++;
+                return "infinity";
             }
-            return string.Format("{0:n2} {1}", number, Utils.FileSuffixes[counter]);
+            decimal time = (decimal)RemainingBytes / DownloadSpeedBytes;
+            int counter = 0;
+            for (int i = 0; i < 2; i++)
+            {
+                if (time / 60 >= 1)
+                {
+                    time /= 60;
+                    counter++;
+                }
+            }
+            return string.Format("{0:n" + (counter == 0 ? "0" : "2") + "} {1}", time, Utils.TimeSuffixes[counter]);
         }
 
         public long BytesReceived { get; }
         public long TotalBytesToReceive { get; }
         public int ProgressPercentage { get; }
         public long RemainingBytes { get; }
+        public long DownloadSpeedBytes { get; }
     }
 
     public delegate void DownloadProgressChangeEventHandler(object sender, DownloadProgressChangeEventArgs e);

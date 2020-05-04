@@ -11,10 +11,12 @@ namespace JeremieLauncher
 {
     public partial class JeremieLauncher : Form
     {
-
+		//TODO: Fix switching games not reloading stuff
+		
+		
         private string launcherInfoURL = "https://docs.google.com/spreadsheets/d/1Djgo8S3R5TaLjLsWBlw9LVL4VRiARuFLIeI67c1PoZ0/export?format=csv&gid=0";
 
-        private Version launcherVersion = new Version(1, 0, 3, 35);
+        private Version launcherVersion = new Version(1, 0, 5, 86);
 
         private string launcherSetupFile = Utils.ApplicationFolder+"\\setup_";
 
@@ -22,24 +24,28 @@ namespace JeremieLauncher
 
         private Game currentGame;
 
-        private Game IFSCLGame = new Game("IFSCL", "IFSCL.exe", "IFSCL", "ifsclVer", "https://docs.google.com/spreadsheets/d/1Fm1OlvmVw7n18MKRK2hoHZr0sBYpjWFSu0N9QooDW0w/export?format=csv&gid=0", "ifsclInfo", "ifscl");
+        private Game IFSCLGame = new Game("IFSCL", "IFSCL", "IFSCL", "https://docs.google.com/spreadsheets/d/1Fm1OlvmVw7n18MKRK2hoHZr0sBYpjWFSu0N9QooDW0w/export?format=csv&gid=0", "ifsclInfo", "ifscl");
 
-        private Game LyokoConquerorsGames = new Game("Lyoko Conquerors","","Lyoko Conquerors", "clVer", "https://docs.google.com/spreadsheets/d/1GeWj18I8amY7Vhm5LY16ChOah7t0qQTUTu5ZgQlfpkY/export?format=csv&gid=0", "clInfo", "cl");
+        private Game LyokoConquerorsGames = new Game("Lyoko Conquerors","","Lyoko Conquerors", "https://docs.google.com/spreadsheets/d/1GeWj18I8amY7Vhm5LY16ChOah7t0qQTUTu5ZgQlfpkY/export?format=csv&gid=0", "clInfo", "cl");
 
         private GameTypes selectedGame=GameTypes.NONE;
-
-        private long nowBytes = 0;
-        private long lastBytes = 0;
-        private long downloadSpeedBytes = 0;
 
         private OptionsForm optionsForm= new OptionsForm();
 
         private Timer checkUpdate_timer;
 
+        private string ChangeLogURL = "";
+
         public JeremieLauncher()
         {
             InitializeComponent();
             instance = this;
+        }
+
+        public void ChangeGameName(string text)
+        {
+            lblGameName.Text = text;
+            lblGameName.Left = (ClientSize.Width - lblGameName.Width) / 2;
         }
 
         private void JeremieLauncher_Load(object sender, EventArgs e)
@@ -48,9 +54,10 @@ namespace JeremieLauncher
             checkUpdate_timer.Tick += timerUpdate_tick;
             Options.OptionsChanged += optionsChanged;
             Options.UpdateOptions();
-            lblLauncherVersion.Text = "Launcher Version: "+ launcherVersion.ToString();
+            Text += " "+ launcherVersion.ToString();
             btnInstall.Left = (ClientSize.Width - btnInstall.Width) / 2;
             pbDownload.Left = (ClientSize.Width - pbDownload.Width) / 2;
+            btnUninstall.Left = (ClientSize.Width - btnUninstall.Width) / 2;
             lblDownload.Location = new Point(pbDownload.Left, pbDownload.Top-pbDownload.Height-((int)Math.Round(lblDownload.Font.Size))/2);
             if (!Directory.Exists(Utils.ApplicationFolder))
             {
@@ -116,9 +123,15 @@ namespace JeremieLauncher
                     newVersion = item.Value;
                     values.TryGetValue("URL." + os, out newVersionURL);
                 }
+                if (item.Key == "doc.changelog")
+                    ChangeLogURL = item.Value;
             }
 
             launcherSetupFile += newVersion + ".exe";
+
+            if (ChangeLogURL!="") {
+                btnChangelog.Enabled = true;
+            }
 
             Version newVersionV = Version.CreateFromString(newVersion);
 
@@ -129,10 +142,6 @@ namespace JeremieLauncher
             {
                 if (MessageBox.Show("Theres an update for Jeremie Launcher, Do you want to download it?", "Update Available", MessageBoxButtons.OKCancel) == DialogResult.OK)
                 {
-                    Timer timer = new Timer();
-                    timer.Tick += new EventHandler(timer_tick);
-                    timer.Interval = 1000;
-                    timer.Start();
                     //Utils.DownloadFile(newVersionURL, launcherSetupFile, setupProgressChanged, setupFinishDownload);
                     FileDownload fw = new FileDownload(newVersionURL, launcherSetupFile);
                     fw.DownloadCompleted += setupFinishDownload;
@@ -158,46 +167,8 @@ namespace JeremieLauncher
 
         private void setupProgressChanged(object sender, DownloadProgressChangeEventArgs e)
         {
-            nowBytes = e.BytesReceived;
-            lblDownload.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + convertBytes(downloadSpeedBytes) + "/s " + getTimeRemaing(e.RemainingBytes);
+            lblDownload.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + e.ConvertBytesToString(e.DownloadSpeedBytes) + "/s " + e.getTimeRemaing();
             pbDownload.Value = (int)e.ProgressPercentage;
-        }
-
-        private void timer_tick(object sender, EventArgs e)
-        {
-            downloadSpeedBytes = nowBytes - lastBytes;
-            lastBytes = nowBytes;
-        }
-
-        private string getTimeRemaing(long allBytes)
-        {
-            if (downloadSpeedBytes <= 0)
-            {
-                return "infinity";
-            }
-            decimal time = (decimal)allBytes / downloadSpeedBytes;
-            int counter = 0;
-            for (int i = 0; i < 2; i++)
-            {
-                if (time / 60 >= 1)
-                {
-                    time /= 60;
-                    counter++;
-                }
-            }
-            return string.Format("{0:n" + (counter == 0 ? "0" : "2") + "} {1}", time, Utils.TimeSuffixes[counter]);
-        }
-
-        private string convertBytes(long bytes)
-        {
-            decimal number = (decimal)bytes;
-            int counter = 0;
-            while (number / 1024 >= 1)
-            {
-                number /= 1024;
-                counter++;
-            }
-            return string.Format("{0:n2} {1}", number, Utils.FileSuffixes[counter]);
         }
 
         private void switchGame(GameTypes game)
@@ -206,11 +177,11 @@ namespace JeremieLauncher
             {
                 if (currentGame != null)
                 {
-                    /*if (currentGame.Downloading)
+                    if (currentGame.Extracting)
                     {
-                        //MessageBox.Show("Downloading Game, Cannot switch game!");
-                        //return;
-                    }*/
+                        MessageBox.Show("Extracting Game, Cannot switch game!");
+                        return;
+                    }
                     currentGame.PauseDownload();
                 }
 
@@ -292,6 +263,24 @@ namespace JeremieLauncher
             }
             else
                 checkUpdate_timer.Stop();
+        }
+
+        private void btnGameFolder_Click(object sender, EventArgs e)
+        {
+            if (currentGame != null)
+                currentGame.OpenGameFolder();
+        }
+
+        private void btnChangelog_Click(object sender, EventArgs e)
+        {
+            if(ChangeLogURL!="")
+            Process.Start(ChangeLogURL);
+        }
+
+        private void btnUninstall_Click(object sender, EventArgs e)
+        {
+            if (currentGame != null)
+                currentGame.Uninstall();
         }
     }
 }
