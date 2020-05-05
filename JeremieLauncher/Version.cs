@@ -22,7 +22,7 @@ namespace JeremieLauncher
 
         public static Version CreateFromString(string version)
         {
-            int[] versionsI = new int[] {0,0,0,0 };
+            int[] versionsI = new int[] { 0, 0, 0, 0 };
             string[] versions = version.Split('.');
             int length = versions.Length;
             if (length > 4)
@@ -61,7 +61,7 @@ namespace JeremieLauncher
 
         public override int GetHashCode()
         {
-            return (int) Math.Pow(VersionMajor.GetHashCode() + 1, Math.Pow(VersionMinor.GetHashCode() + 1, Math.Pow(VersionPatch.GetHashCode() + 1, VersionBuild.GetHashCode() + 1)));
+            return (int)Math.Pow(VersionMajor.GetHashCode() + 1, Math.Pow(VersionMinor.GetHashCode() + 1, Math.Pow(VersionPatch.GetHashCode() + 1, VersionBuild.GetHashCode() + 1)));
         }
 
 
@@ -127,6 +127,6 @@ namespace JeremieLauncher
         public int VersionPatch { get; private set; }
         public int VersionBuild { get; private set; }
         public string versionString { get { return $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; } }
-        public int version { get { string temp = $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; return int.Parse(temp.Replace(".","")); } }
+        public int version { get { string temp = $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; return int.Parse(temp.Replace(".", "")); } }
     }
 }

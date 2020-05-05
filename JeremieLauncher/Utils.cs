@@ -38,7 +38,7 @@ namespace JeremieLauncher
 
         public static readonly string[] FileSuffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
 
-        public static string GamesFolder = "games\\";
+        public static string GamesFolder = "games";
 
         public static readonly string[] TimeSuffixes = { "Seconds", "Minutes", "Hours" };
 
@@ -56,6 +56,6 @@ namespace JeremieLauncher
 
     }
 
-    
+
 
 }

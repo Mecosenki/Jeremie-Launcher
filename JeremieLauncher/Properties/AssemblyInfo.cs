@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("JeremieLauncher")]
-[assembly: AssemblyDescription("A lightweight alternative launcher for Immu's Games")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("JeremieLauncher")]
+[assembly: AssemblyCompany("App24")]
 [assembly: AssemblyProduct("JeremieLauncher")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d7c65545-2215-4b6d-b7e7-4df2f42b1c64")]
+[assembly: Guid("59ad9785-5fc3-41fb-b84d-336bcc64d8d3")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -21,16 +21,6 @@ namespace JeremieLauncher
             string destinationDirectoryFullpath = di.FullName;
             ZipArchive source = ZipFile.OpenRead(ZipName);
             int count = 0;
-            long maxSize = 0;
-            long totalSize = 0;
-            foreach (ZipArchiveEntry entry in source.Entries)
-            {
-                string fileDestinationPath = Path.GetFullPath(Path.Combine(destinationDirectoryFullpath, entry.FullName));
-                if (Path.GetFileName(fileDestinationPath).Length != 0)
-                {
-                    maxSize += entry.Length;
-                }
-            }
             foreach (ZipArchiveEntry entry in source.Entries)
             {
                 count++;
@@ -50,10 +40,9 @@ namespace JeremieLauncher
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(fileDestinationPath));
                     await Task.Run(() => { entry.ExtractToFile(fileDestinationPath, overwrite: true); });
-                    totalSize += entry.Length;
                 }
 
-                ExtractProgressChangedEventArgs args = new ExtractProgressChangedEventArgs(count, source.Entries.Count, entry, totalSize, maxSize);
+                ExtractProgressChangedEventArgs args = new ExtractProgressChangedEventArgs(count, source.Entries.Count, entry);
 
                 if (handler != null)
                     handler?.Invoke(this, args);
@@ -87,15 +76,13 @@ namespace JeremieLauncher
 
     public class ExtractProgressChangedEventArgs : EventArgs
     {
-        public ExtractProgressChangedEventArgs(int extractedCount, int allExtractCount, ZipArchiveEntry zipArchiveEntry, long extractedSize, long maxSize)
+        public ExtractProgressChangedEventArgs(int extractedCount, int allExtractCount, ZipArchiveEntry zipArchiveEntry)
         {
             Progress = (extractedCount * 100) / allExtractCount;
             ExtractedCount = extractedCount;
             AllExtractCount = allExtractCount;
             CurrentEntry = zipArchiveEntry;
             CurrentFileName = zipArchiveEntry.FullName;
-            ExtractedSize = extractedSize;
-            ZipSize = maxSize;
         }
 
         public int Progress { get; }
@@ -103,8 +90,6 @@ namespace JeremieLauncher
         public int AllExtractCount { get; }
         public string CurrentFileName { get; }
         public ZipArchiveEntry CurrentEntry;
-        public long ExtractedSize { get; }
-        public long ZipSize { get; }
     }
 
     public delegate void ExtractProgressChangedEventHandler(Object sender, ExtractProgressChangedEventArgs e);

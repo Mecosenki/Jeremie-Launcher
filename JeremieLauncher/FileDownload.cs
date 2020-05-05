@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace JeremieLauncher
 {
-    //Credit to ebb and Felix D. on stackoverflow.com
+    //Credit to ebb and Felix D. on stackoverflow.com edited by App24
     public class FileDownload
     {
         private volatile bool AllowedToRun;
@@ -33,14 +33,14 @@ namespace JeremieLauncher
 
         private Timer timer = new Timer();
 
-        public FileDownload(string source, string destination, bool overwrite=true, int chunckSize=5120)
+        public FileDownload(string source, string destination, bool overwrite = true, int chunckSize = 5120)
         {
             AllowedToRun = true;
 
             Source = source;
             Destination = destination;
             ChunkSize = chunckSize;
-            ContentLength = new Lazy<int>(()=>Convert.ToInt32(GetContentLength()));
+            ContentLength = new Lazy<int>(() => Convert.ToInt32(GetContentLength()));
 
             Overwrite = overwrite;
 
@@ -76,11 +76,17 @@ namespace JeremieLauncher
 
             timer.Start();
 
+            string path = Path.GetDirectoryName(Destination);
+
+            if(!string.IsNullOrEmpty(path))
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
             using (var response = await request.GetResponseAsync())
             {
                 using (var responseStream = response.GetResponseStream())
                 {
-                    using (var fs = new FileStream(Destination, (Overwrite&&!Paused) ?FileMode.Create:FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+                    using (var fs = new FileStream(Destination, (Overwrite && !Paused) ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
                     {
                         Paused = false;
                         finished = false;
@@ -147,7 +153,7 @@ namespace JeremieLauncher
         {
             BytesReceived = bytesReceived;
             TotalBytesToReceive = totalBytesToReceive;
-            ProgressPercentage = (int) ((bytesReceived * 100) / totalBytesToReceive);
+            ProgressPercentage = (int)((bytesReceived * 100) / totalBytesToReceive);
             RemainingBytes = totalBytesToReceive - bytesReceived;
             DownloadSpeedBytes = downloadSpeedBytes;
         }
