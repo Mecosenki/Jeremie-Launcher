@@ -1,0 +1,2 @@
+closeOnLaunch:True
+checkUpdateTime:3
