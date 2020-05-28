@@ -18,15 +18,4 @@ namespace JeremieLauncher
         public object Value { get { dynamic changedObj = Convert.ChangeType(value, value.GetType()); return changedObj; } }
         public Type Type { get { return value.GetType(); } }
     }
-
-    /*public class Option<DataType> : Option where DataType : struct
-    {
-        public Option(DataType value)
-        {
-            Type = value.GetType();
-            Value = value;
-        }
-        public Type Type { get; }
-        public DataType Value { get; }
-    }*/
 }

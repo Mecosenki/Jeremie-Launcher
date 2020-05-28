@@ -4,14 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{59AD9785-5FC3-41FB-B84D-336BCC64D8D3}</ProjectGuid>
+    <ProjectGuid>{81CF6E06-ECB0-413C-B6E8-AA5975C5F85E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>JeremieLauncher</RootNamespace>
     <AssemblyName>JeremieLauncher</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,7 +37,7 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>JeremieLauncher.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,8 +55,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ButtonType.cs" />
     <Compile Include="FileDownload.cs" />
     <Compile Include="FileExtract.cs" />
+    <Compile Include="FlagsHelper.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="GameStatus.cs" />
     <Compile Include="JeremieLauncher.cs">
       <SubType>Form</SubType>
@@ -63,7 +67,6 @@
     <Compile Include="JeremieLauncher.Designer.cs">
       <DependentUpon>JeremieLauncher.cs</DependentUpon>
     </Compile>
-    <Compile Include="Game.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="OptionsForm.cs">
@@ -90,8 +93,8 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

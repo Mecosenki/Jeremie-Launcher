@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -67,6 +68,12 @@ namespace JeremieLauncher
             if (!AllowedToRun)
                 throw new InvalidOperationException();
 
+            /*if (!Utils.hasWriteAccessToFolder(Path.GetDirectoryName(Path.GetFullPath(Destination))))
+            {
+                Utils.StartApplicationInAdminMode();
+                return;
+            }*/
+
             var request = (HttpWebRequest)WebRequest.Create(Source);
             request.Method = "GET";
             request.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)";
@@ -78,9 +85,9 @@ namespace JeremieLauncher
 
             string path = Path.GetDirectoryName(Destination);
 
-            if(!string.IsNullOrEmpty(path))
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            if (!string.IsNullOrEmpty(path))
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
 
             using (var response = await request.GetResponseAsync())
             {
@@ -173,7 +180,7 @@ namespace JeremieLauncher
         {
             return Utils.ConvertBytesToString(bytes);
         }
-        public string getTimeRemaing()
+        public string getTimeRemaining()
         {
             if (DownloadSpeedBytes <= 0)
             {

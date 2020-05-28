@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,7 +13,7 @@ namespace JeremieLauncher
     {
         private static string optionsFile = "JeremieOptions.txt";
 
-        private static Dictionary<string, Option> options = new Dictionary<string, Option>();
+        public static Dictionary<string, Option> options = new Dictionary<string, Option>();
 
         public static readonly int[] TimeSelections = { 0, 1, 5, 10, 30, 60 };
 
@@ -22,7 +23,7 @@ namespace JeremieLauncher
         {
             if (!File.Exists(optionsFile))
             {
-                CreateOptions();
+                UpdateOptionsFile(getDefaultOptions());
             }
 
             string[] lines = File.ReadAllLines(optionsFile);
@@ -51,7 +52,7 @@ namespace JeremieLauncher
 
         private static void writeMissing()
         {
-            Dictionary<string, Option> dic = getDefaultOptions().Where(entry => !options.ContainsKey(entry.Key)).ToDictionary(entry=>entry.Key, entry=>entry.Value);
+            Dictionary<string, Option> dic = getDefaultOptions().Where(entry => !options.ContainsKey(entry.Key)).ToDictionary(entry => entry.Key, entry => entry.Value);
             foreach (var pair in dic)
             {
                 File.AppendAllText(optionsFile, $"{pair.Key}:{pair.Value.Value}\n");
@@ -69,24 +70,17 @@ namespace JeremieLauncher
                 foreach (var pair in options)
                 {
                     Option value;
-                    if ((defaultOptions.TryGetValue(pair.Key, out value))){
-                    } else {
+                    if ((defaultOptions.TryGetValue(pair.Key, out value)))
+                    {
+                    }
+                    else
+                    {
                         equal = false;
                         break;
                     }
                 }
             }
             return equal;
-        }
-
-        public static void UpdateOptionsFile()
-        {
-            string text = "";
-            foreach (KeyValuePair<string, Option> item in options)
-            {
-                text += $"{item.Key}:{item.Value.Value}\n";
-            }
-            File.WriteAllText(optionsFile, text);
         }
 
         public static void UpdateOption(string name, object value)
@@ -127,10 +121,14 @@ namespace JeremieLauncher
             return options;
         }
 
-        private static void CreateOptions()
+        public static void UpdateOptionsFile(Dictionary<string, Option> options)
         {
+            if (!Utils.hasWriteAccessToFolder(Path.GetFullPath(optionsFile)))
+            {
+                Utils.StartApplicationInAdminMode();
+            }
             string text = "";
-            foreach (KeyValuePair<string, Option> item in getDefaultOptions())
+            foreach (KeyValuePair<string, Option> item in options)
             {
                 text += $"{item.Key}:{item.Value.Value}\n";
             }

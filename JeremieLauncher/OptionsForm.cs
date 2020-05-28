@@ -19,7 +19,7 @@ namespace JeremieLauncher
 
         private void OptionsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Options.UpdateOptionsFile();
+            Options.UpdateOptionsFile(Options.options);
             Options.UpdateOptions();
         }
 

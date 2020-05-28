@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.IO;
+using System.Windows.Forms;
+using System.Security.AccessControl;
+using System.ComponentModel;
 
 namespace JeremieLauncher
 {
@@ -53,9 +57,47 @@ namespace JeremieLauncher
             }
             return string.Format("{0:n2} {1}", number, FileSuffixes[counter]);
         }
+        public static bool hasWriteAccessToFolder(string folderPath)
+        {
+            try
+            {
+                File.WriteAllText(folderPath+"\\test.txt", "");
+                File.Delete(folderPath+"\\test.txt");
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return hasWriteAccessToFolder(Directory.GetParent(folderPath).FullName);
+            }
+        }
 
+        public static void StartApplicationInAdminMode()
+        {
+            try
+            {
+                ProcessStartInfo info = new ProcessStartInfo("JeremieLauncher.exe");
+                info.UseShellExecute = true;
+                info.Verb = "runas";
+                Process.Start(info);
+                Environment.Exit(0);
+            }
+            catch (Win32Exception)
+            {
+                Environment.Exit(0);
+            }
+        }
+
+        public static void OpenURL(string url)
+        {
+            if (MessageBox.Show("This will open the link in your browser, continue?", "Open Link", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                Process.Start(url);
+            }
+        }
     }
-
-
 
 }

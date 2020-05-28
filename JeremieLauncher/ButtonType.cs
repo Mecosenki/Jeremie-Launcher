@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace JeremieLauncher
 {
-    [Flags]
-    public enum GameStatus
+    public enum ButtonType
     {
-        NONE=0,
-        INSTALLED=1,
-        UPDATED=2,
-        UNAVAILABLE=4
+        INSTALL,
+        UPDATE,
+        UNINSTALL,
+        REPAIR,
+        PLAY,
+        NONE
     }
 }

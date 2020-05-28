@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -16,6 +17,12 @@ namespace JeremieLauncher
 
         private async Task Start()
         {
+            /*if (!Utils.hasWriteAccessToFolder(Path.GetDirectoryName(Path.GetFullPath(DestDir))))
+            {
+                Utils.StartApplicationInAdminMode();
+                return;
+            }*/
+
             ExtractProgressChangedEventHandler handler = ExtractProgressChanged;
             DirectoryInfo di = Directory.CreateDirectory(DestDir);
             string destinationDirectoryFullpath = di.FullName;

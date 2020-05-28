@@ -16,23 +16,30 @@ namespace JeremieLauncher
     {
         private List<Game> games = new List<Game>();
 
-        private Version launcherVersion=new Version(1,1,0,104);
-        private string launcherInfoFile = "launcherInfo.csv";
-        private string launcherSetupFile = Utils.ApplicationFolder + "\\setup_";
+        private Version launcherVersion = new Version(1, 1, 4, 145);
+        private string launcherInfoFile = Utils.ApplicationFolder+ "\\launcherInfo.csv";
+        private string launcherSetupFile = Utils.ApplicationFolder+ "\\setup_";
         private string launcherInfoURL = "https://docs.google.com/spreadsheets/d/1Djgo8S3R5TaLjLsWBlw9LVL4VRiARuFLIeI67c1PoZ0/export?format=csv&gid=0";
         private string ChangeLogURL = "";
+        private bool Updating = false;
 
-        public static JeremieLauncher instance { get; private set; }
-        private int index;
-        private bool Updating;
-        private OptionsForm OptionsForm=new OptionsForm();
+        public static JeremieLauncher instance;
+
+        private int index = 0;
         private Timer checkUpdate_timer;
+        private OptionsForm OptionsForm = new OptionsForm();
 
         public JeremieLauncher()
         {
             InitializeComponent();
             instance = this;
-            Text += " " + launcherVersion;
+            Text += " " + launcherVersion.ToString();
+        }
+
+        public static void setText(string text)
+        {
+            instance.lblGameName.Text = text;
+            instance.lblGameName.Left = (instance.ClientSize.Width - instance.lblGameName.Width) / 2;
         }
 
         private async void JeremieLauncher_Load(object sender, EventArgs e)
@@ -41,11 +48,9 @@ namespace JeremieLauncher
             checkUpdate_timer.Tick += timerUpdate_tick;
             Options.OptionsChanged += optionsChanged;
             Options.UpdateOptions();
-            addGame(new Game("IFSCL", "IFSCL", "https://docs.google.com/spreadsheets/d/1Fm1OlvmVw7n18MKRK2hoHZr0sBYpjWFSu0N9QooDW0w/export?format=csv&gid=0"));
-            addGame(new Game("Lyoko Conquerors", "", "https://docs.google.com/spreadsheets/d/1GeWj18I8amY7Vhm5LY16ChOah7t0qQTUTu5ZgQlfpkY/export?format=csv&gid=0"));
-
-            SwitchGame(0);
-
+            AddGame(new Game("IFSCL", "IFSCL", "https://docs.google.com/spreadsheets/d/1Fm1OlvmVw7n18MKRK2hoHZr0sBYpjWFSu0N9QooDW0w/export?format=csv&gid=0", "http://bit.ly/changelogIFSCL"));
+            AddGame(new Game("Lyoko Conquerors", "", "https://docs.google.com/spreadsheets/d/1GeWj18I8amY7Vhm5LY16ChOah7t0qQTUTu5ZgQlfpkY/export?format=csv&gid=0", ""));
+            SwitchGame(0, true);
             await checkUpdate();
 
             if (!Updating)
@@ -54,26 +59,26 @@ namespace JeremieLauncher
                 {
                     await game.loadData();
                 }
-
-                SwitchGame(0);
             }
 
+            //SwitchGame(0, true);
+        }
+
+        private void SwitchGame(int index, bool forced=false)
+        {
+            if(this.index!=index||forced)
+            if (index < games.Count && index >= 0)
+            {
+                games[this.index].SwitchOutGame();
+
+                games[index].SwitchToGame();
+                this.index = index;
+            }
         }
 
         private async void timerUpdate_tick(object sender, EventArgs e)
         {
             await checkUpdate();
-        }
-
-        private void optionsChanged(object sender, OptionsChangedEventArgs e)
-        {
-            if (e.GetOption<int>("checkUpdateTime") != 0)
-            {
-                checkUpdate_timer.Interval = Options.TimeSelections[e.GetOption<int>("checkUpdateTime")] * 60000;
-                checkUpdate_timer.Start();
-            }
-            else
-                checkUpdate_timer.Stop();
         }
 
         private async Task checkUpdate()
@@ -170,15 +175,25 @@ namespace JeremieLauncher
         private void setupProgressChanged(object sender, DownloadProgressChangeEventArgs e)
         {
             Game game = games[index];
-            game.lblStatus.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + e.ConvertBytesToString(e.DownloadSpeedBytes) + "/s " + e.getTimeRemaing();
-            game.pbDownload.Value = (int)e.ProgressPercentage;
+            game.lblStatus.Text = "Progress: " + e.ConvertDownloadedBytesToString() + "/" + e.ConvertTotalBytesToString() + " (" + e.ProgressPercentage.ToString() + "%) " + e.ConvertBytesToString(e.DownloadSpeedBytes) + "/s " + e.getTimeRemaining();
+            game.pbProgress.Value = (int)e.ProgressPercentage;
         }
 
-        private void addGame(Game game)
+        private void optionsChanged(object sender, OptionsChangedEventArgs e)
         {
-            GameMenuStrip.Items.Add(game.GameName);
-            game.index = games.Count;
+            if (e.GetOption<int>("checkUpdateTime") != 0)
+            {
+                checkUpdate_timer.Interval = Options.TimeSelections[e.GetOption<int>("checkUpdateTime")] * 60000;
+                checkUpdate_timer.Start();
+            }
+            else
+                checkUpdate_timer.Stop();
+        }
+
+        private void AddGame(Game game)
+        {
             games.Add(game);
+            GameMenuStrip.Items.Add(game.GameName);
         }
 
         private void GameMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -190,18 +205,18 @@ namespace JeremieLauncher
             }
         }
 
-        private void SwitchGame(int index)
-        {
-            games[this.index].SwitchOutGame();
-
-            games[index].SwitchToGame();
-            this.index = index;
-        }
-
         private void btnOptions_Click(object sender, EventArgs e)
         {
-            OptionsForm.FormClosed += new FormClosedEventHandler((object sender_, FormClosedEventArgs e_)=> { OptionsForm = new OptionsForm(); });
+            OptionsForm.FormClosed += new FormClosedEventHandler((object sender_, FormClosedEventArgs e_) => { OptionsForm = new OptionsForm(); });
             OptionsForm.Show();
+        }
+
+        private void btnChangelog_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(ChangeLogURL))
+            {
+                Utils.OpenURL(ChangeLogURL);
+            }
         }
     }
 }
