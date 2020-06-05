@@ -16,7 +16,7 @@ namespace JeremieLauncher
     {
         private List<Game> games = new List<Game>();
 
-        private Version launcherVersion = new Version(1, 1, 4, 145);
+        private Version launcherVersion = new Version(1, 1, 5, 150);
         private string launcherInfoFile = Utils.ApplicationFolder+ "\\launcherInfo.csv";
         private string launcherSetupFile = Utils.ApplicationFolder+ "\\setup_";
         private string launcherInfoURL = "https://docs.google.com/spreadsheets/d/1Djgo8S3R5TaLjLsWBlw9LVL4VRiARuFLIeI67c1PoZ0/export?format=csv&gid=0";
@@ -25,7 +25,7 @@ namespace JeremieLauncher
 
         public static JeremieLauncher instance;
 
-        private int index = 0;
+        public int index { get; private set; }
         private Timer checkUpdate_timer;
         private OptionsForm OptionsForm = new OptionsForm();
 
@@ -192,6 +192,7 @@ namespace JeremieLauncher
 
         private void AddGame(Game game)
         {
+            game.index = games.Count;
             games.Add(game);
             GameMenuStrip.Items.Add(game.GameName);
         }

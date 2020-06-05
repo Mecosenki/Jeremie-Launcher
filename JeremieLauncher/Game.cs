@@ -46,7 +46,7 @@ namespace JeremieLauncher
             lblStatus.Font = font;
             lblStatus.AutoSize = true;
 
-            pbProgress.Location = new Point(0, 270);
+            pbProgress.Location = new Point(0, 260);
             pbProgress.Size = new Size(500, 20);
 
             pbTrailer.Location = new Point(596, 330);
@@ -54,13 +54,13 @@ namespace JeremieLauncher
             pbTrailer.SizeMode = PictureBoxSizeMode.StretchImage;
             pbTrailer.Click += pbTrailer_Click;
 
-            btnMain.Location = new Point(0, 130);
+            btnMain.Location = new Point(0, 120);
             btnMain.Size = new Size(160, 50);
             btnMain.Text = "Install";
             btnMain.Font = font;
             btnMain.Click += btnMain_click;
 
-            btnSecond.Location = new Point(0, 190);
+            btnSecond.Location = new Point(0, 180);
             btnSecond.Font = font;
             btnSecond.Text = "Uninstall";
             btnSecond.Size = new Size(120, 40);
@@ -294,10 +294,27 @@ namespace JeremieLauncher
             }
 
             updateUI();
-            if (FlagsHelper.IsSet(gameStatus, GameStatus.INSTALLED) && !FlagsHelper.IsSet(gameStatus, GameStatus.UPDATED))
+            if (hasUpdate())
             {
-                MessageBox.Show("New Update for "+GameName+"\nNew Version: "+NewVersion.ToString()+"\nCurrent Installed Version: "+getVersionInstalled().ToString());
+                MessageBox.Show("New Update for " + GameName + "\nNew Version: " + NewVersion.ToString() + "\nCurrent Installed Version: " + getVersionInstalled().ToString());
+
             }
+            if (JeremieLauncher.instance.index == index)
+            {
+                if (UpToDate())
+                {
+                    JeremieLauncher.instance.pb_gif.Image = Properties.Resources.no_update;
+                }
+                else
+                {
+                    JeremieLauncher.instance.pb_gif.Image = Properties.Resources.update;
+                }
+            }
+        }
+
+        private bool hasUpdate()
+        {
+            return FlagsHelper.IsSet(gameStatus, GameStatus.INSTALLED) && !FlagsHelper.IsSet(gameStatus, GameStatus.UPDATED);
         }
 
         private void downloadGame()
@@ -484,6 +501,14 @@ namespace JeremieLauncher
             {
                 c.Visible = true;
             }
+            if (UpToDate())
+            {
+                JeremieLauncher.instance.pb_gif.Image = Properties.Resources.no_update;
+            }
+            else
+            {
+                JeremieLauncher.instance.pb_gif.Image = Properties.Resources.update;
+            }
         }
 
         public void SwitchOutGame()
@@ -518,6 +543,7 @@ namespace JeremieLauncher
         private string DownloadURL = "";
         private bool Downloading = false;
         private bool Extracting = false;
+        public int index { get; set; }
 
         private Version NewVersion = new Version(-100,0,0,0);
 

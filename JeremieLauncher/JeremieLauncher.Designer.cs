@@ -34,6 +34,8 @@
             this.lblTrailer = new System.Windows.Forms.Label();
             this.btnChangelog = new System.Windows.Forms.Button();
             this.btnOptions = new System.Windows.Forms.Button();
+            this.pb_gif = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_gif)).BeginInit();
             this.SuspendLayout();
             // 
             // GameMenuStrip
@@ -87,11 +89,22 @@
             this.btnOptions.UseVisualStyleBackColor = true;
             this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
+            // pb_gif
+            // 
+            this.pb_gif.Image = global::JeremieLauncher.Properties.Resources.no_update;
+            this.pb_gif.Location = new System.Drawing.Point(329, 291);
+            this.pb_gif.Name = "pb_gif";
+            this.pb_gif.Size = new System.Drawing.Size(191, 147);
+            this.pb_gif.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pb_gif.TabIndex = 4;
+            this.pb_gif.TabStop = false;
+            // 
             // JeremieLauncher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.pb_gif);
             this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.btnChangelog);
             this.Controls.Add(this.lblTrailer);
@@ -105,6 +118,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Jeremie Launcher";
             this.Load += new System.EventHandler(this.JeremieLauncher_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pb_gif)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -117,6 +131,7 @@
         private System.Windows.Forms.Label lblTrailer;
         private System.Windows.Forms.Button btnChangelog;
         private System.Windows.Forms.Button btnOptions;
+        public System.Windows.Forms.PictureBox pb_gif;
     }
 }
 
