@@ -4,12 +4,13 @@ namespace JeremieLauncher
 {
     public class Version
     {
-        public Version(int versionMajor, int versionMinor, int versionPatch, int versionBuild)
+        public Version(int versionMajor=0, int versionMinor=0, int versionPatch=0, int versionBuild=0, bool ignorebuild=false)
         {
             VersionMajor = versionMajor;
             VersionMinor = versionMinor;
             VersionPatch = versionPatch;
             VersionBuild = versionBuild;
+            IgnoreBuild = ignorebuild;
         }
 
         public bool IsSameVersion(Version other)
@@ -17,7 +18,7 @@ namespace JeremieLauncher
             return VersionMajor == other.VersionMajor && VersionMinor == other.VersionMinor && VersionPatch == other.VersionPatch && VersionBuild == other.VersionBuild;
         }
 
-        public override string ToString() => $"{VersionMajor}.{VersionMinor}.{VersionPatch} [build {VersionBuild}]";
+        public override string ToString() => $"{VersionMajor}.{VersionMinor}.{VersionPatch}"+(IgnoreBuild?"":$" [build {VersionBuild}]");
 
         public static Version CreateFromString(string version)
         {
@@ -125,6 +126,7 @@ namespace JeremieLauncher
         public int VersionMinor { get; private set; }
         public int VersionPatch { get; private set; }
         public int VersionBuild { get; private set; }
+        private bool IgnoreBuild;
         public string versionString { get { return $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; } }
         public int version { get { string temp = $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; return int.Parse(temp.Replace(".", "")); } }
     }

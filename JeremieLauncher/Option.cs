@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +12,19 @@ namespace JeremieLauncher
     {
         public Option(object value)
         {
-            this.value = value;
+            this._value = value;
         }
 
-        private object value;
-        public object Value { get { dynamic changedObj = Convert.ChangeType(value, value.GetType()); return changedObj; } }
-        public Type Type { get { return value.GetType(); } }
+        [JsonConstructor]
+        public Option(string name, object value)
+        {
+            Name = name;
+            this._value = value;
+        }
+
+        private object _value;
+        public string Name { get; }
+        public object Value { get { dynamic changedObj = Convert.ChangeType(_value, _value.GetType()); return changedObj; } }
+        //public Type Type { get { return value.GetType(); } }
     }
 }

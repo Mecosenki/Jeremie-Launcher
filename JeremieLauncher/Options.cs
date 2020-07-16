@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +13,7 @@ namespace JeremieLauncher
 {
     public static class Options
     {
-        private static string optionsFile = "JeremieOptions.txt";
+        private static string optionsFile = "JeremieOptions.json";
 
         public static Dictionary<string, Option> options = new Dictionary<string, Option>();
 
@@ -26,17 +28,11 @@ namespace JeremieLauncher
                 UpdateOptionsFile(getDefaultOptions());
             }
 
-            string[] lines = File.ReadAllLines(optionsFile);
+            List<Option> options1 = JsonConvert.DeserializeObject<List<Option>>(File.ReadAllText(optionsFile));
             options = new Dictionary<string, Option>();
-            foreach (string line in lines)
+            foreach (Option option1 in options1)
             {
-                string[] components = line.Split(':');
-                Option option = new Option(components[1]);
-                Option optionType;
-                if (getDefaultOptions().TryGetValue(components[0], out optionType))
-                {
-                    options.Add(components[0], new Option(Convert.ChangeType(option.Value, optionType.Type)));
-                }
+                options.Add(option1.Name, option1);
             }
             if (!checkOptions())
             {
@@ -52,11 +48,19 @@ namespace JeremieLauncher
 
         private static void writeMissing()
         {
+            List<Option> t = new List<Option>();
+            if (File.Exists(optionsFile))
+            {
+                t = JsonConvert.DeserializeObject<List<Option>>(File.ReadAllText(optionsFile));
+            }
             Dictionary<string, Option> dic = getDefaultOptions().Where(entry => !options.ContainsKey(entry.Key)).ToDictionary(entry => entry.Key, entry => entry.Value);
             foreach (var pair in dic)
             {
-                File.AppendAllText(optionsFile, $"{pair.Key}:{pair.Value.Value}\n");
+                t.Add(new Option(pair.Key, pair.Value.Value));
             }
+            string output = JsonConvert.SerializeObject(t, Formatting.Indented);
+            File.WriteAllText(optionsFile, output);
+
             UpdateOptions();
         }
 
@@ -118,6 +122,8 @@ namespace JeremieLauncher
             Dictionary<string, Option> options = new Dictionary<string, Option>();
             options.Add("closeOnLaunch", new Option(true));
             options.Add("checkUpdateTime", new Option(3));
+            options.Add("discordRichPresence", new Option(true));
+            options.Add("showCustomGameDiscord", new Option(true));
             return options;
         }
 
@@ -127,12 +133,13 @@ namespace JeremieLauncher
             {
                 Utils.StartApplicationInAdminMode();
             }
-            string text = "";
+            List<Option> t = new List<Option>();
             foreach (KeyValuePair<string, Option> item in options)
             {
-                text += $"{item.Key}:{item.Value.Value}\n";
+                t.Add(new Option(item.Key, item.Value.Value));
             }
-            File.WriteAllText(optionsFile, text);
+            string output = JsonConvert.SerializeObject(t, Formatting.Indented);
+            File.WriteAllText(optionsFile, output);
         }
     }
 

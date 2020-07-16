@@ -180,6 +180,15 @@ namespace JeremieLauncher
         {
             return Utils.ConvertBytesToString(bytes);
         }
+        public double getTimeRemainingLong()
+        {
+            if (DownloadSpeedBytes <= 0)
+            {
+                return 0;
+            }
+            double time = RemainingBytes / DownloadSpeedBytes;
+            return time;
+        }
         public string getTimeRemaining()
         {
             if (DownloadSpeedBytes <= 0)

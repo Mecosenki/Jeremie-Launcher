@@ -30,22 +30,33 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JeremieLauncher));
             this.GameMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.addCustomGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblGameName = new System.Windows.Forms.Label();
             this.lblTrailer = new System.Windows.Forms.Label();
             this.btnChangelog = new System.Windows.Forms.Button();
             this.btnOptions = new System.Windows.Forms.Button();
             this.pb_gif = new System.Windows.Forms.PictureBox();
+            this.btnBugs = new System.Windows.Forms.Button();
+            this.GameMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_gif)).BeginInit();
             this.SuspendLayout();
             // 
             // GameMenuStrip
             // 
+            this.GameMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addCustomGameToolStripMenuItem});
             this.GameMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.GameMenuStrip.Name = "GameMenuStrip";
             this.GameMenuStrip.Size = new System.Drawing.Size(800, 24);
             this.GameMenuStrip.TabIndex = 0;
             this.GameMenuStrip.Text = "menuStrip1";
             this.GameMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.GameMenuStrip_ItemClicked);
+            // 
+            // addCustomGameToolStripMenuItem
+            // 
+            this.addCustomGameToolStripMenuItem.Name = "addCustomGameToolStripMenuItem";
+            this.addCustomGameToolStripMenuItem.Size = new System.Drawing.Size(120, 20);
+            this.addCustomGameToolStripMenuItem.Text = "Add Custom Game";
             // 
             // lblGameName
             // 
@@ -99,11 +110,23 @@
             this.pb_gif.TabIndex = 4;
             this.pb_gif.TabStop = false;
             // 
+            // btnBugs
+            // 
+            this.btnBugs.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnBugs.Location = new System.Drawing.Point(12, 238);
+            this.btnBugs.Name = "btnBugs";
+            this.btnBugs.Size = new System.Drawing.Size(121, 53);
+            this.btnBugs.TabIndex = 5;
+            this.btnBugs.Text = "Report Bugs";
+            this.btnBugs.UseVisualStyleBackColor = true;
+            this.btnBugs.Click += new System.EventHandler(this.btnBugs_Click);
+            // 
             // JeremieLauncher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnBugs);
             this.Controls.Add(this.pb_gif);
             this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.btnChangelog);
@@ -117,7 +140,10 @@
             this.Name = "JeremieLauncher";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Jeremie Launcher";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.JeremieLauncher_FormClosing);
             this.Load += new System.EventHandler(this.JeremieLauncher_Load);
+            this.GameMenuStrip.ResumeLayout(false);
+            this.GameMenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_gif)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -132,6 +158,8 @@
         private System.Windows.Forms.Button btnChangelog;
         private System.Windows.Forms.Button btnOptions;
         public System.Windows.Forms.PictureBox pb_gif;
+        private System.Windows.Forms.ToolStripMenuItem addCustomGameToolStripMenuItem;
+        private System.Windows.Forms.Button btnBugs;
     }
 }
 

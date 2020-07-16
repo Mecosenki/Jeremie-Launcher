@@ -33,6 +33,8 @@ namespace JeremieLauncher
             btnSaveOptions.Left = (ClientSize.Width - btnSaveOptions.Width) / 2;
             chkCloseOnLeave.Checked = Options.GetOption<bool>("closeOnLaunch");
             cbCheckUpdate.SelectedIndex = Options.GetOption<int>("checkUpdateTime");
+            chkRichPresence.Checked = Options.GetOption<bool>("discordRichPresence");
+            chkShowCustomGame.Checked = Options.GetOption<bool>("showCustomGameDiscord");
         }
 
         private void btnSaveOptions_Click(object sender, EventArgs e)
@@ -43,6 +45,16 @@ namespace JeremieLauncher
         private void cbCheckUpdate_SelectedIndexChanged(object sender, EventArgs e)
         {
             Options.UpdateOption("checkUpdateTime", cbCheckUpdate.SelectedIndex);
+        }
+
+        private void chkRichPresence_CheckStateChanged(object sender, EventArgs e)
+        {
+            Options.UpdateOption("discordRichPresence", chkRichPresence.Checked);
+        }
+
+        private void chkShowCustomGame_CheckedChanged(object sender, EventArgs e)
+        {
+            Options.UpdateOption("showCustomGameDiscord", chkShowCustomGame.Checked);
         }
     }
 }

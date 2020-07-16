@@ -33,6 +33,8 @@
             this.btnSaveOptions = new System.Windows.Forms.Button();
             this.lblCheckUpdate = new System.Windows.Forms.Label();
             this.cbCheckUpdate = new System.Windows.Forms.ComboBox();
+            this.chkRichPresence = new System.Windows.Forms.CheckBox();
+            this.chkShowCustomGame = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // chkCloseOnLeave
@@ -86,11 +88,37 @@
             this.cbCheckUpdate.TabIndex = 3;
             this.cbCheckUpdate.SelectedIndexChanged += new System.EventHandler(this.cbCheckUpdate_SelectedIndexChanged);
             // 
+            // chkRichPresence
+            // 
+            this.chkRichPresence.AutoSize = true;
+            this.chkRichPresence.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkRichPresence.Location = new System.Drawing.Point(16, 73);
+            this.chkRichPresence.Name = "chkRichPresence";
+            this.chkRichPresence.Size = new System.Drawing.Size(233, 24);
+            this.chkRichPresence.TabIndex = 4;
+            this.chkRichPresence.Text = "Show Discord Rich Presence";
+            this.chkRichPresence.UseVisualStyleBackColor = true;
+            this.chkRichPresence.CheckStateChanged += new System.EventHandler(this.chkRichPresence_CheckStateChanged);
+            // 
+            // chkShowCustomGame
+            // 
+            this.chkShowCustomGame.AutoSize = true;
+            this.chkShowCustomGame.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkShowCustomGame.Location = new System.Drawing.Point(16, 103);
+            this.chkShowCustomGame.Name = "chkShowCustomGame";
+            this.chkShowCustomGame.Size = new System.Drawing.Size(249, 24);
+            this.chkShowCustomGame.TabIndex = 5;
+            this.chkShowCustomGame.Text = "Show Custom Game in Discord";
+            this.chkShowCustomGame.UseVisualStyleBackColor = true;
+            this.chkShowCustomGame.CheckedChanged += new System.EventHandler(this.chkShowCustomGame_CheckedChanged);
+            // 
             // OptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(469, 356);
+            this.Controls.Add(this.chkShowCustomGame);
+            this.Controls.Add(this.chkRichPresence);
             this.Controls.Add(this.cbCheckUpdate);
             this.Controls.Add(this.lblCheckUpdate);
             this.Controls.Add(this.btnSaveOptions);
@@ -114,5 +142,7 @@
         private System.Windows.Forms.Button btnSaveOptions;
         private System.Windows.Forms.Label lblCheckUpdate;
         private System.Windows.Forms.ComboBox cbCheckUpdate;
+        private System.Windows.Forms.CheckBox chkRichPresence;
+        private System.Windows.Forms.CheckBox chkShowCustomGame;
     }
 }
