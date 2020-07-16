@@ -1,6 +1,6 @@
-﻿namespace JeremieLauncher
+﻿namespace KankrelatLauncher
 {
-    partial class JeremieLauncher
+    partial class KankrelatLauncher
     {
         /// <summary>
         /// Required designer variable.
