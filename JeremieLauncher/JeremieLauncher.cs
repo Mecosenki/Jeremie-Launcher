@@ -14,9 +14,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JeremieLauncher
+namespace KankrelatLauncher
 {
-    public partial class JeremieLauncher : Form
+    public partial class KankrelatLauncher : Form
     {
         private List<Game> games = new List<Game>();
 
@@ -38,7 +38,7 @@ namespace JeremieLauncher
         private ulong startTime { get; }
         public RichPresence RichPresence;
 
-        public JeremieLauncher()
+        public KankrelatLauncher()
         {
             InitializeComponent();
             instance = this;
@@ -51,7 +51,7 @@ namespace JeremieLauncher
 
             RichPresence = new RichPresence()
             {
-                Details = "Jeremie Launcher " + launcherVersion.ToString(),
+                Details = "Kankrelat Launcher " + launcherVersion.ToString(),
                 Assets = new Assets()
                 {
                     LargeImageKey = "image"
@@ -72,7 +72,7 @@ namespace JeremieLauncher
             instance.lblGameName.Left = (instance.ClientSize.Width - instance.lblGameName.Width) / 2;
         }
 
-        private async void JeremieLauncher_Load(object sender, EventArgs e)
+        private async void KankrelatLauncher_Load(object sender, EventArgs e)
         {
             checkUpdate_timer = new Timer();
             checkUpdate_timer.Tick += timerUpdate_tick;
@@ -337,7 +337,7 @@ namespace JeremieLauncher
             Utils.OpenURL("https://github.com/App24/Jeremie-Launcher/issues");
         }
 
-        private void JeremieLauncher_FormClosing(object sender, FormClosingEventArgs e)
+        private void KankrelatLauncher_FormClosing(object sender, FormClosingEventArgs e)
         {
             client.Dispose();
         }
