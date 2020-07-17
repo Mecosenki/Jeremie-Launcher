@@ -10,6 +10,7 @@ namespace JeremieLauncher
 {
     public static class Utils
     {
+
         public static bool Is64BitProcess = (IntPtr.Size == 8);
         public static bool Is64BitOperatingSystem = Is64BitProcess || InternalCheckIsWow64();
 
@@ -41,9 +42,9 @@ namespace JeremieLauncher
 
         public static readonly string[] FileSuffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
 
-        public static readonly string GamesFolder = "games";
+        public static string GamesFolder = "games";
 
-        public static string[] TimeSuffixes = { "Seconds", "Minutes", "Hours" };
+        public static readonly string[] TimeSuffixes = { "Seconds", "Minutes", "Hours" };
 
         public static string ConvertBytesToString(long bytes)
         {
@@ -56,7 +57,6 @@ namespace JeremieLauncher
             }
             return string.Format("{0:n2} {1}", number, FileSuffixes[counter]);
         }
-
         public static bool HasWriteAccessToFolder(string folderPath)
         {
             try
@@ -79,7 +79,7 @@ namespace JeremieLauncher
         {
             try
             {
-                ProcessStartInfo info = new ProcessStartInfo("KankrelatLauncher.exe");
+                ProcessStartInfo info = new ProcessStartInfo("JeremieLauncher.exe");
                 info.UseShellExecute = true;
                 info.Verb = "runas";
                 Process.Start(info);
@@ -98,24 +98,5 @@ namespace JeremieLauncher
                 Process.Start(url);
             }
         }
-
-        public static float Clamp(float value, float min, float max)
-        {
-            if (value > max)
-                return max;
-            if (value < min)
-                return min;
-            return value;
-        }
-
-        public static int Clamp(int value, int min, int max)
-        {
-            if (value > max)
-                return max;
-            if (value < min)
-                return min;
-            return value;
-        }
-
     }
 }

@@ -118,7 +118,6 @@ namespace JeremieLauncher
         private static Dictionary<string, Option> getDefaultOptions()
         {
             Dictionary<string, Option> options = new Dictionary<string, Option>();
-            options.Add("language", new Option(0));
             options.Add("closeOnLaunch", new Option(true));
             options.Add("checkUpdateTime", new Option(3));
             options.Add("discordRichPresence", new Option(true));
