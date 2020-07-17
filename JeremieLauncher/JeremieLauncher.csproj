@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81CF6E06-ECB0-413C-B6E8-AA5975C5F85E}</ProjectGuid>
+    <ProjectGuid>{426FE52A-05A3-4ABA-BE6E-7A9F9F0E728F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>JeremieLauncher</RootNamespace>
     <AssemblyName>JeremieLauncher</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,9 +35,6 @@
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>JeremieLauncher.Program</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DiscordRPC, Version=1.0.150.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DiscordRichPresence.1.0.150\lib\net35\DiscordRPC.dll</HintPath>
@@ -48,7 +44,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
@@ -62,20 +57,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ButtonType.cs" />
     <Compile Include="CustomGame.cs" />
     <Compile Include="FileDownload.cs" />
     <Compile Include="FileExtract.cs" />
     <Compile Include="FlagsHelper.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="GameStatus.cs" />
+    <Compile Include="GameMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GameToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="JeremieLauncher.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="JeremieLauncher.Designer.cs">
       <DependentUpon>JeremieLauncher.cs</DependentUpon>
     </Compile>
-    <Compile Include="Option.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="OptionsForm.cs">
       <SubType>Form</SubType>

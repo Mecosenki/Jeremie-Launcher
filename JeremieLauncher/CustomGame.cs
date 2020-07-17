@@ -16,7 +16,7 @@ namespace JeremieLauncher
 
         public Game ToGame()
         {
-            return new Game(GameName, ExecPath, custom:true);
+            return new Game(GameName, ExecPath, custom: true);
         }
 
         public override string ToString()

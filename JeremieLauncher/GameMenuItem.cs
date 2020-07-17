@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace JeremieLauncher
 {
-    public enum ButtonType
+    public class GameMenuItem : MenuItem
     {
-        INSTALL,
-        UPDATE,
-        UNINSTALL,
-        REPAIR,
-        PLAY,
-        NONE
+        public Game Game { get; set; }
+        public int GameIndex { get; set; }
     }
 }

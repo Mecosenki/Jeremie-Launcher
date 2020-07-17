@@ -1,10 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JeremieLauncher
 {
     public class Version
     {
-        public Version(int versionMajor=0, int versionMinor=0, int versionPatch=0, int versionBuild=0, bool ignorebuild=false)
+        public int VersionMajor { get; private set; }
+        public int VersionMinor { get; private set; }
+        public int VersionPatch { get; private set; }
+        public int VersionBuild { get; private set; }
+        private bool IgnoreBuild;
+        public string VersionString { get { return $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; } }
+        public int version { get { return int.Parse(VersionString.Replace(".", "")); } }
+
+        public Version(int versionMajor = 0, int versionMinor = 0, int versionPatch = 0, int versionBuild = 0, bool ignorebuild = false)
         {
             VersionMajor = versionMajor;
             VersionMinor = versionMinor;
@@ -18,7 +30,7 @@ namespace JeremieLauncher
             return VersionMajor == other.VersionMajor && VersionMinor == other.VersionMinor && VersionPatch == other.VersionPatch && VersionBuild == other.VersionBuild;
         }
 
-        public override string ToString() => $"{VersionMajor}.{VersionMinor}.{VersionPatch}"+(IgnoreBuild?"":$" [build {VersionBuild}]");
+        public override string ToString() => $"{VersionMajor}.{VersionMinor}.{VersionPatch}" + (IgnoreBuild ? "" : $" [build {VersionBuild}]");
 
         public static Version CreateFromString(string version)
         {
@@ -121,13 +133,5 @@ namespace JeremieLauncher
         {
             return !(a == b);
         }
-
-        public int VersionMajor { get; private set; }
-        public int VersionMinor { get; private set; }
-        public int VersionPatch { get; private set; }
-        public int VersionBuild { get; private set; }
-        private bool IgnoreBuild;
-        public string versionString { get { return $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; } }
-        public int version { get { string temp = $"{VersionMajor}.{VersionMinor}.{VersionPatch}.{VersionBuild}"; return int.Parse(temp.Replace(".", "")); } }
     }
 }

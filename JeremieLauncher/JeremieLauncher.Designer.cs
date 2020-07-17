@@ -1,4 +1,7 @@
-﻿namespace JeremieLauncher
+﻿using System;
+using System.Windows.Forms;
+
+namespace JeremieLauncher
 {
     partial class JeremieLauncher
     {
@@ -102,7 +105,6 @@
             // 
             // pb_gif
             // 
-            this.pb_gif.Image = global::JeremieLauncher.Properties.Resources.no_update;
             this.pb_gif.Location = new System.Drawing.Point(329, 291);
             this.pb_gif.Name = "pb_gif";
             this.pb_gif.Size = new System.Drawing.Size(191, 147);
@@ -115,9 +117,9 @@
             this.btnBugs.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBugs.Location = new System.Drawing.Point(12, 238);
             this.btnBugs.Name = "btnBugs";
-            this.btnBugs.Size = new System.Drawing.Size(121, 53);
+            this.btnBugs.Size = new System.Drawing.Size(121, 69);
             this.btnBugs.TabIndex = 5;
-            this.btnBugs.Text = "Report Bugs";
+            this.btnBugs.Text = "Report Launcher Bugs";
             this.btnBugs.UseVisualStyleBackColor = true;
             this.btnBugs.Click += new System.EventHandler(this.btnBugs_Click);
             // 
@@ -138,7 +140,6 @@
             this.MainMenuStrip = this.GameMenuStrip;
             this.MaximizeBox = false;
             this.Name = "JeremieLauncher";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Jeremie Launcher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.JeremieLauncher_FormClosing);
             this.Load += new System.EventHandler(this.JeremieLauncher_Load);
@@ -154,7 +155,7 @@
 
         private System.Windows.Forms.MenuStrip GameMenuStrip;
         private System.Windows.Forms.Label lblGameName;
-        private System.Windows.Forms.Label lblTrailer;
+        public System.Windows.Forms.Label lblTrailer;
         private System.Windows.Forms.Button btnChangelog;
         private System.Windows.Forms.Button btnOptions;
         public System.Windows.Forms.PictureBox pb_gif;

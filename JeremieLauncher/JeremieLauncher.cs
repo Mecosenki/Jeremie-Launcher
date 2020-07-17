@@ -1,7 +1,6 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,23 +19,27 @@ namespace JeremieLauncher
     {
         private List<Game> games = new List<Game>();
 
-        private Version launcherVersion = new Version(1, 2, 2, ignorebuild:true);
+        public static JeremieLauncher instance;
+
+        private Version launcherVersion = new Version(1, 2, 3, ignorebuild: true);
         private string launcherInfoFile = Utils.ApplicationFolder + "\\launcherInfo.csv";
         private string launcherSetupFile = Utils.ApplicationFolder + "\\setup_";
         private string launcherInfoURL = "https://docs.google.com/spreadsheets/d/1Djgo8S3R5TaLjLsWBlw9LVL4VRiARuFLIeI67c1PoZ0/export?format=csv&gid=0";
         private string ChangeLogURL = "";
+
         private bool Updating = false;
         public static string customGamesFile = "customGames.json";
-
-        public static JeremieLauncher instance;
-
-        public int index { get; private set; }
-        private Timer checkUpdate_timer;
-        private OptionsForm OptionsForm = new OptionsForm();
+        private bool Done = false;
 
         public DiscordRpcClient client { get; private set; }
         private ulong startTime { get; }
         public RichPresence RichPresence;
+
+        public int index { get; private set; }
+
+        private Timer checkUpdate_timer;
+
+        private OptionsForm OptionsForm = new OptionsForm();
 
         public JeremieLauncher()
         {
@@ -63,7 +66,6 @@ namespace JeremieLauncher
             };
 
             client.SetPresence(RichPresence);
-
         }
 
         public static void setText(string text)
@@ -83,11 +85,12 @@ namespace JeremieLauncher
             if (File.Exists(customGamesFile))
             {
                 List<CustomGame> customGames = JsonConvert.DeserializeObject<List<CustomGame>>(File.ReadAllText(customGamesFile));
-                foreach(CustomGame customGame in customGames) {
+                foreach (CustomGame customGame in customGames)
+                {
                     AddGame(customGame.ToGame());
                 }
             }
-            
+
             SwitchGame(0, true);
             await checkUpdate();
 
@@ -98,22 +101,7 @@ namespace JeremieLauncher
                     await game.loadData();
                 }
             }
-
-            //SwitchGame(0, true);
-        }
-
-        private void SwitchGame(int index, bool forced = false)
-        {
-            if (this.index != index || forced)
-                if (index < games.Count && index >= 0)
-                {
-                    games[this.index].SwitchOutGame();
-
-                    lblTrailer.Visible = !games[index].CustomGame;
-                    pb_gif.Visible = !games[index].CustomGame;
-                    games[index].SwitchToGame();
-                    this.index = index;
-                }
+            Done = true;
         }
 
         private async void timerUpdate_tick(object sender, EventArgs e)
@@ -247,28 +235,146 @@ namespace JeremieLauncher
             }
         }
 
+        void MenuItemContext(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) return;
+
+            GameToolStripMenuItem mID = (GameToolStripMenuItem)sender;
+
+            ContextMenu tsmiContext = new ContextMenu();
+
+            GameMenuItem editGameInfo = new GameMenuItem();
+            GameMenuItem removeGame = new GameMenuItem();
+
+            editGameInfo.Text = "Edit Game Info";
+            removeGame.Text = "Remove Game";
+
+            editGameInfo.Game = mID.Game;
+            removeGame.Game = mID.Game;
+
+            editGameInfo.GameIndex = mID.GameIndex;
+            removeGame.GameIndex = mID.GameIndex;
+
+            tsmiContext.MenuItems.Add(editGameInfo);
+            tsmiContext.MenuItems.Add(removeGame);
+
+            editGameInfo.Click += new EventHandler(EditGameInfo_Click);
+            removeGame.Click += new EventHandler(RemoveGame_Click);
+
+            tsmiContext.Show(GameMenuStrip, GameMenuStrip.PointToClient(new Point(Cursor.Position.X, Cursor.Position.Y)));
+        }
+
+        void EditGameInfo_Click(object sender, EventArgs e)
+        {
+            GameMenuItem mID = (GameMenuItem)sender;
+            mID.Game.EditCustomGame(mID.Game.GameName, mID.Game.GameExec);
+        }
+        void RemoveGame_Click(object sender, EventArgs e)
+        {
+            GameMenuItem mID = (GameMenuItem)sender;
+            mID.Game.RemoveGame();
+        }
+
+        public void RemoveGame(int index)
+        {
+            GameMenuStrip.Items.RemoveAt(index);
+            games[index].Clear();
+            games.RemoveAt(index);
+            if (this.index == index)
+                SwitchGame(0);
+        }
+
         public void UpdateCustomGame(Game game)
         {
             GameMenuStrip.Items.RemoveAt(game.index);
             games[game.index].Clear();
             games.RemoveAt(game.index);
             games.Insert(game.index, game);
-            ToolStripMenuItem GameMenuItem = new ToolStripMenuItem();
+            GameToolStripMenuItem GameMenuItem = new GameToolStripMenuItem();
             GameMenuItem.AutoSize = true;
             GameMenuItem.Text = game.GameName;
+            GameMenuItem.Game = game;
+            GameMenuItem.GameIndex = game.index;
+            if (game.CustomGame)
+            {
+                GameMenuItem.MouseDown += new MouseEventHandler(MenuItemContext);
+            }
             GameMenuStrip.Items.Insert(game.index, GameMenuItem);
-            SwitchGame(game.index, true);
+            if (this.index == game.index)
+                SwitchGame(game.index, true);
         }
 
         private void AddGame(Game game)
         {
             game.index = games.Count;
             games.Add(game);
-            ToolStripMenuItem GameMenuItem = new ToolStripMenuItem();
+            GameToolStripMenuItem GameMenuItem = new GameToolStripMenuItem();
             GameMenuItem.AutoSize = true;
             GameMenuItem.Text = game.GameName;
+            GameMenuItem.Game = game;
+            GameMenuItem.GameIndex = game.index;
+            if (game.CustomGame)
+            {
+                GameMenuItem.MouseDown += new MouseEventHandler(MenuItemContext);
+            }
             //GameMenuStrip.Items.Add(game.GameName);
             GameMenuStrip.Items.Insert(GameMenuStrip.Items.Count - 1, GameMenuItem);
+        }
+
+        private void SwitchGame(int index, bool forced = false)
+        {
+            if ((this.index != index && Done) || forced)
+            {
+                if (index < games.Count && index >= 0)
+                {
+                    if (games.Count > this.index)
+                        games[this.index].SwitchOutGame();
+
+                    lblTrailer.Visible = games[index].HasTrailer;
+                    pb_gif.Visible = !games[index].CustomGame;
+                    games[index].SwitchToGame();
+                    this.index = index;
+                }
+            }
+            else if (!Done)
+            {
+                MessageBox.Show("Checking for updates for games!");
+            }
+        }
+
+        void AddCustomGame(string defaultName = "", string defaultLocation = "")
+        {
+            CustomGameData customGameData = Prompt.ShowDialog("Select Game Location", "Custom Game", defaultName, defaultLocation);
+            if (customGameData.dialogResult == DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(customGameData.gameName) || string.IsNullOrEmpty(customGameData.gameLocation))
+                {
+                    MessageBox.Show("Input fields must not be empty!");
+                    AddCustomGame(customGameData.gameName, customGameData.gameLocation);
+                    return;
+                }
+                if (!Utils.HasWriteAccessToFolder(Path.GetFullPath(Directory.GetCurrentDirectory())))
+                {
+                    Utils.StartApplicationInAdminMode();
+                }
+                CustomGame d = new CustomGame(customGameData.gameName, customGameData.gameLocation);
+                List<CustomGame> g = new List<CustomGame>();
+                if (File.Exists(customGamesFile))
+                    g = JsonConvert.DeserializeObject<List<CustomGame>>(File.ReadAllText(customGamesFile));
+                if (g.FindIndex(delegate (CustomGame custom)
+                {
+                    return custom.Equals(d);
+                }) >= 0)
+                {
+                    MessageBox.Show("Custom game with same name already exists!");
+                    AddCustomGame(customGameData.gameName, customGameData.gameLocation);
+                    return;
+                }
+                g.Add(d);
+                string output = JsonConvert.SerializeObject(g, Formatting.Indented);
+                File.WriteAllText(customGamesFile, output);
+                AddGame(d.ToGame());
+            }
         }
 
         private void GameMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -284,37 +390,11 @@ namespace JeremieLauncher
             }
         }
 
-        void AddCustomGame(string defaultName="", string defaultLocation="")
+        private void btnChangelog_Click(object sender, EventArgs e)
         {
-            CustomGameData customGameData = Prompt.ShowDialog("Select Game Location", "Custom Game", defaultName, defaultLocation);
-            if (customGameData.dialogResult == DialogResult.OK)
+            if (!string.IsNullOrEmpty(ChangeLogURL))
             {
-                if (string.IsNullOrEmpty(customGameData.gameName) || string.IsNullOrEmpty(customGameData.gameLocation))
-                {
-                    MessageBox.Show("Input fields must not be empty!");
-                    AddCustomGame(customGameData.gameName, customGameData.gameLocation);
-                    return;
-                }
-                if (!Utils.hasWriteAccessToFolder(Path.GetFullPath(Directory.GetCurrentDirectory())))
-                {
-                    Utils.StartApplicationInAdminMode();
-                }
-                CustomGame d = new CustomGame(customGameData.gameName, customGameData.gameLocation);
-                List<CustomGame> g = new List<CustomGame>();
-                if (File.Exists(customGamesFile))
-                    g = JsonConvert.DeserializeObject<List<CustomGame>>(File.ReadAllText(customGamesFile));
-                if (g.FindIndex(delegate(CustomGame custom)
-                {
-                    return custom.Equals(d);
-                })>=0) {
-                    MessageBox.Show("Custom game with same name already exists");
-                    AddCustomGame(customGameData.gameName, customGameData.gameLocation);
-                    return;
-                }
-                g.Add(d);
-                string output = JsonConvert.SerializeObject(g, Formatting.Indented);
-                File.WriteAllText(customGamesFile, output);
-                AddGame(new Game(d.GameName, d.ExecPath, custom: true));
+                Utils.OpenURL(ChangeLogURL);
             }
         }
 
@@ -322,14 +402,6 @@ namespace JeremieLauncher
         {
             OptionsForm.FormClosed += new FormClosedEventHandler((object sender_, FormClosedEventArgs e_) => { OptionsForm = new OptionsForm(); });
             OptionsForm.ShowDialog();
-        }
-
-        private void btnChangelog_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(ChangeLogURL))
-            {
-                Utils.OpenURL(ChangeLogURL);
-            }
         }
 
         private void btnBugs_Click(object sender, EventArgs e)

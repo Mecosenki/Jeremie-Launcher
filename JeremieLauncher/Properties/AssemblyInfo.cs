@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("JeremieLauncher")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("App24")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("JeremieLauncher")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("81cf6e06-ecb0-413c-b6e8-aa5975c5f85e")]
+[assembly: Guid("426fe52a-05a3-4aba-be6e-7a9f9f0e728f")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -64,7 +64,7 @@
             // 
             this.lblCheckUpdate.AutoSize = true;
             this.lblCheckUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCheckUpdate.Location = new System.Drawing.Point(12, 39);
+            this.lblCheckUpdate.Location = new System.Drawing.Point(8, 45);
             this.lblCheckUpdate.Name = "lblCheckUpdate";
             this.lblCheckUpdate.Size = new System.Drawing.Size(188, 20);
             this.lblCheckUpdate.TabIndex = 2;
@@ -82,7 +82,7 @@
             "10 Minutes",
             "30 Minutes",
             "60 Minutes"});
-            this.cbCheckUpdate.Location = new System.Drawing.Point(206, 39);
+            this.cbCheckUpdate.Location = new System.Drawing.Point(202, 42);
             this.cbCheckUpdate.Name = "cbCheckUpdate";
             this.cbCheckUpdate.Size = new System.Drawing.Size(176, 28);
             this.cbCheckUpdate.TabIndex = 3;
@@ -92,7 +92,7 @@
             // 
             this.chkRichPresence.AutoSize = true;
             this.chkRichPresence.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkRichPresence.Location = new System.Drawing.Point(16, 73);
+            this.chkRichPresence.Location = new System.Drawing.Point(12, 76);
             this.chkRichPresence.Name = "chkRichPresence";
             this.chkRichPresence.Size = new System.Drawing.Size(233, 24);
             this.chkRichPresence.TabIndex = 4;
@@ -104,7 +104,7 @@
             // 
             this.chkShowCustomGame.AutoSize = true;
             this.chkShowCustomGame.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkShowCustomGame.Location = new System.Drawing.Point(16, 103);
+            this.chkShowCustomGame.Location = new System.Drawing.Point(12, 106);
             this.chkShowCustomGame.Name = "chkShowCustomGame";
             this.chkShowCustomGame.Size = new System.Drawing.Size(249, 24);
             this.chkShowCustomGame.TabIndex = 5;

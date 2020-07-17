@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,7 +11,7 @@ namespace JeremieLauncher
 {
     public static class Options
     {
-        private static string optionsFile = "JeremieOptions.json";
+        private static string optionsFile = "options.json";
 
         public static Dictionary<string, Option> options = new Dictionary<string, Option>();
 
@@ -120,6 +118,7 @@ namespace JeremieLauncher
         private static Dictionary<string, Option> getDefaultOptions()
         {
             Dictionary<string, Option> options = new Dictionary<string, Option>();
+            options.Add("language", new Option(0));
             options.Add("closeOnLaunch", new Option(true));
             options.Add("checkUpdateTime", new Option(3));
             options.Add("discordRichPresence", new Option(true));
@@ -129,7 +128,7 @@ namespace JeremieLauncher
 
         public static void UpdateOptionsFile(Dictionary<string, Option> options)
         {
-            if (!Utils.hasWriteAccessToFolder(Path.GetFullPath(optionsFile)))
+            if (!Utils.HasWriteAccessToFolder(Path.GetFullPath(optionsFile)))
             {
                 Utils.StartApplicationInAdminMode();
             }
@@ -177,4 +176,24 @@ namespace JeremieLauncher
     }
 
     public delegate void OptionsChangedEventHandler(object sender, OptionsChangedEventArgs e);
+
+    public class Option
+    {
+        public Option(object value)
+        {
+            this._value = value;
+        }
+
+        [JsonConstructor]
+        public Option(string name, object value)
+        {
+            Name = name;
+            this._value = value;
+        }
+
+        private object _value;
+        public string Name { get; }
+        public object Value { get { dynamic changedObj = Convert.ChangeType(_value, _value.GetType()); return changedObj; } }
+        //public Type Type { get { return value.GetType(); } }
+    }
 }
